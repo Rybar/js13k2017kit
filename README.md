@@ -9,3 +9,9 @@ Other bits of kit included:
 * [Sonant-X](https://github.com/nicolas-van/sonant-x) tiny synthesizer library
 
 * Jack Rugile's tiny font-renderer and 5x5 pxiel font, modified for gamezero renderer
+
+* object Pool
+
+* basic entity class with circle-based collision methods
+
+* an old version of 
