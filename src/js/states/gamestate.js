@@ -12,6 +12,15 @@ states.game = {
         //E.sounds.loaded++;
         E.sounds.song = buffer;
 
+        //test graphic for rotation
+        E.renderTarget = E.page5;
+        E.gfx.checker(64,64,18);
+        E.gfx.fillRect(0,0,3,3,E.White);
+        E.gfx.fillRect(12,0,15,3,E.ElfGreen);
+        E.gfx.fillRect(12,12,15,15,E.Red);
+        E.gfx.fillRect(0,12,3,15,E.TahitiGold);
+        E.gfx.fillRect(0,12+8,3,15+8,E.TahitiGold);
+
       });
       // --------end hacky sound stuff
 
@@ -86,7 +95,7 @@ states.game = {
 
     render: function(dt) {
 
-        E.renderTarget = E.page1;
+        E.renderTarget = 0x10000;
 
         E.gfx.fillRect(0,0,256,256,0);
 
@@ -110,7 +119,7 @@ states.game = {
             });
             let distFromCenter = E.util.dist(bulletScreenPoint.x+128, bulletScreenPoint.y+128, 128, 128)
             let sizeFactor = E.util.norm(distFromCenter, 0, 128);
-            E.gfx.fillCircle(bulletScreenPoint.x+128, bulletScreenPoint.y+128, 4 * sizeFactor, E.White);
+            E.gfx.fillCircle(bulletScreenPoint.x+128, bulletScreenPoint.y+128, 4 * sizeFactor, 21);
 
           }
         }
@@ -144,7 +153,7 @@ states.game = {
                 scale: 1,
                 snap: 1,
                 render: 1,
-                color: E.VeniceBlue,
+                color: 21,
             });
 
             E.renderSource = E.page3;
@@ -162,21 +171,18 @@ states.game = {
             E.renderTarget = E.screen;
             E.gfx.spr(0,0,256,256);
 
-            //test graphic for rotation
-            E.renderTarget = E.page5;
-            E.gfx.checker(64,64,18);
-            E.gfx.fillRect(64,16,66,32,E.White);
-            E.gfx.fillRect(64,16,68,20,E.PinkPlum);
+
+
 
             //render test graphic to screen without rotation
-            E.renderSource = E.page5;
-            E.renderTarget = E.screen;
-            E.gfx.spr(64,16,16,16, 200,200);
-
-            //render rotated
             //E.renderSource = E.page5;
             //E.renderTarget = E.screen;
-            //E.gfx.rspr(64, 16, 16, 16, 64,64, 3, 1);
+            //E.gfx.spr(0,0,16,16, 200,200);
+
+            //render rotated
+            E.renderSource = E.page5;
+            E.renderTarget = E.screen;
+            //E.gfx.rspr(0,0,16,16, 128,128, 6+ (Math.cos(E.t)*5), E.t*80);
 
     },
 

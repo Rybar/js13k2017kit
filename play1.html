@@ -1,0 +1,20 @@
+<style>
+#b {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, #474, #002);
+}
+</style><canvas id="b"><audio id="a"></audio><script>
+
+c=b.getContext('2d');
+onload = function update() {
+  H = b.height = 512;
+  W = b.width = 0 | H * innerWidth / innerHeight;
+  c.translate(W/2, H/2);
+  c.strokeStyle = '#fff'
+}
+
+</script>

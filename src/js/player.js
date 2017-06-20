@@ -81,10 +81,12 @@ E.player = {
 
     let distFromCenter = E.util.dist(playerDrawPoint.x+128, playerDrawPoint.y+128, 128,128);
 
-    let playerSizeFactor = E.util.norm(distFromCenter, 0, 128)
+    let playerSizeFactor = E.util.norm(distFromCenter, 0, 128);
 
     E.renderTarget = E.page1;
-    E.gfx.fillCircle(playerDrawPoint.x+128, playerDrawPoint.y+128, E.player.radius * playerSizeFactor, 21);
+    //E.gfx.fillCircle(playerDrawPoint.x+128, playerDrawPoint.y+128, E.player.radius * playerSizeFactor, 21);
+    E.renderSource = E.page5;
+    E.gfx.rspr(0,0,16,16, playerDrawPoint.x+128, playerDrawPoint.y+128, playerSizeFactor*3, 360/256*E.player.x*-1);
 
 
 

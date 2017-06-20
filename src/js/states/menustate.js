@@ -35,7 +35,7 @@ states.menu = {
               scale: 10,
               snap: 1,
               render: 1,
-              color: E.White,
+              color: 21,
           });
 
         //draw stuff here.

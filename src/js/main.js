@@ -21,7 +21,7 @@ init = function(){
 
     events: [
       {name: 'load', from: 'init', to: 'boot'},
-      {name: 'ready', from: 'boot', to: 'menu'},
+      {name: 'ready', from: 'boot', to: 'game'},
       {name: 'play', from: ['menu', 'gameover'], to: 'game'},
       {name: 'lose', from: ['game', 'gameover'], to: 'gameover'},
       {name: 'reset', from: ['init', 'boot', 'menu', 'gameover', 'game'], to: 'boot'},
@@ -72,7 +72,7 @@ init = function(){
 
   //init vid capture
   //E.capturer = new CCapture( {format: 'gif', workersPath: ''});
-  //E.capturer.start();
+//  E.capturer.start();
 
   //state machine
   fsm.load();
