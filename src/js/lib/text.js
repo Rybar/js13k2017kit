@@ -22,7 +22,7 @@
 							}
 
 							else {
-								E.gfx.fillRect(
+								E.gfx.fr(
 								opt.x + ( x * opt.scale ) + ( ( size * opt.scale ) + opt.hspacing ) * i,
 								opt.y + (y * opt.scale),
 								opt.x + ( x * opt.scale ) + ( ( size * opt.scale ) + opt.hspacing ) * i + opt.scale,
@@ -48,6 +48,9 @@
 				})[0],
 				textWidth = ( longestLine.length * letterSize ) + ( ( longestLine.length - 1 ) * opt.hspacing ),
 				textHeight = ( lineCount * letterSize ) + ( ( lineCount - 1 ) * opt.vspacing );
+
+				if(!opt.halign)opt.halign = 'left';
+				if(!opt.valign)opt.valign = 'bottom';
 
 			var sx = opt.x,
 				sy = opt.y,

@@ -20,9 +20,9 @@ states.menu = {
 
     render: function(dt) {
 
-      E.gfx.fillRect(0,0,256,256, 0);
+      E.gfx.fr(0,0,256,256, 0);
 
-      E.gfx.fillRect(0,0,64,64,2);
+      E.gfx.fr(0,0,64,64,2);
 
       Txt.text({
               x: 128,

@@ -23,11 +23,11 @@ module.exports = function(grunt) {
 					'src/js/lib/Engine.js',
 					'src/js/lib/statemachine.js',
 
-					'src/js/lib/CCapture.all.min.js',
+					//'src/js/lib/CCapture.all.min.js',
 					'src/js/lib/raymarching.js',
 					'src/js/assets.js',
 					'src/js/lib/pool.js',
-					'src/js/lib/entity.js',
+					//'src/js/lib/entity.js',
 					'src/js/particle.js',
 
 					'src/js/lib/sonantx.js',

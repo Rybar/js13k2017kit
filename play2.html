@@ -201,7 +201,7 @@ function Main(){
     // size to emulate different shades. Technically speaking, the rectangles are antialiased, so a few
     // more colors are introduced, but for the most part, the scene is monochrome.
     ctx.fillStyle = bgCol;
-    ctx.fillRect(0, 0, cnvsID.width, cnvsID.height);
+    ctx.fr(0, 0, cnvsID.width, cnvsID.height);
     ctx.fillStyle = objCol;
 
     // Keeps count of the distance-calculations-per-pixel value that we're presenting to the screen.
@@ -352,7 +352,7 @@ function Main(){
             sCol = Math.sqrt(sCol)*1.;
             var dim = sqDim*sCol;
             var dimOff = (sqDim-dim)*0.5;
-            ctx.fillRect(x + dimOff, y + dimOff, dim, dim); // I might look into replacing this with a custom function.
+            ctx.fr(x + dimOff, y + dimOff, dim, dim); // I might look into replacing this with a custom function.
 
 
             // If you have a super fast computer, and would like to see what the actual scene looks like, set
@@ -360,7 +360,7 @@ function Main(){
 
             /*var ic = parseInt(sCol*255);
             ctx.fillStyle = "rgb("+ic+", "+ic+", "+ic+")";
-            ctx.fillRect(x, y, 1, 1);*/
+            ctx.fr(x, y, 1, 1);*/
 
 
 

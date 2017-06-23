@@ -17,7 +17,7 @@ var states = {
 
     render: function(dt) {
 
-        E.gfx.fillRect(0,0,64,64,2);
+        E.gfx.fr(0,0,64,64,2);
 
         //draw stuff here.
 

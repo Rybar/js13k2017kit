@@ -32,6 +32,7 @@ function Particle() {
       this.remaining -= E.dt;
       this.x += E.dt * this.xvel;
       this.y += E.dt * this.yvel;
+      this.draw();
       //console.log('bullet used/updated');
         if(this.remaining <= 0) {
           this.dead = true;
@@ -53,6 +54,10 @@ function Particle() {
     this.yvel = 0;
     this.life = 1;
     this.inUse = false;
+  }
+
+  Particle.prototype.draw = function(){
+    E.gfx.circle(this.x, this.y, 0|Math.random()*4, 21);
   }
 
 

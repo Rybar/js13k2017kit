@@ -11,38 +11,38 @@ ENGINE = {
   page7: 0x70000,
 
   //color enum
-  Black: 0,
-  Valhalla: 1,
-  LouLou: 2,
-  OiledCedar: 3,
-  Rope: 4,
-  TahitiGold: 5,
-  Twine: 6,
-  Pancho: 7,
-  GoldenFizz: 8,
-  Atlantis: 9,
-  Christi: 10,
-  ElfGreen: 11,
-  Dell: 12,
-  Verdigris: 13,
-  Opal: 14,
-  DeepKoamaru: 15,
-  VeniceBlue: 16,
-  RoyalBlue: 17,
-  Cornflower: 18,
-  Viking: 19,
-  LightSteelBlue: 20,
-  White: 21,
-  Heather: 22,
-  Topaz: 23,
-  DimGray: 24,
-  SmokeyAsh: 25,
-  Clairvoyant: 26,
-  Red: 27,
-  Mandy: 28,
-  PinkPlum: 29,
-  RainForest: 30,
-  Stinger: 31,
+  // Black: 0,
+  // Valhalla: 1,
+  // LouLou: 2,
+  // OiledCedar: 3,
+  // Rope: 4,
+  // TahitiGold: 5,
+  // Twine: 6,
+  // Pancho: 7,
+  // GoldenFizz: 8,
+  // Atlantis: 9,
+  // Christi: 10,
+  // ElfGreen: 11,
+  // Dell: 12,
+  // Verdigris: 13,
+  // Opal: 14,
+  // DeepKoamaru: 15,
+  // VeniceBlue: 16,
+  // RoyalBlue: 17,
+  // Cornflower: 18,
+  // Viking: 19,
+  // LightSteelBlue: 20,
+  // White: 21,
+  // Heather: 22,
+  // Topaz: 23,
+  // DimGray: 24,
+  // SmokeyAsh: 25,
+  // Clairvoyant: 26,
+  // Red: 27,
+  // Mandy: 28,
+  // PinkPlum: 29,
+  // RainForest: 30,
+  // Stinger: 31,
 
   //DB32 Palette
   colors: [0xff000000, 0xff342022, 0xff3c2845, 0xff313966, 0xff3b568f, 0xff2671df, 0xff66a0d9, 0xff9ac3ee, 0xff36f2fb,
@@ -94,7 +94,7 @@ ENGINE = {
         E.ram.fill(color, E.renderTarget, E.renderTarget + 0x10000);
       },
 
-      pset: function (x, y, color) { //from colors array, 0-31
+      pset(x, y, color) { //from colors array, 0-31
         x = x|0; y = y|0;
 
         if (x > -1 && x < 256 && y > -1 && y < 256) {
@@ -102,7 +102,7 @@ ENGINE = {
         }
       },
 
-      line: function (x1, y1, x2, y2, color) {
+      line(x1, y1, x2, y2, color) {
 
         x1 = x1|0;
         x2 = x2|0;
@@ -156,7 +156,7 @@ ENGINE = {
 
       },
 
-      circle: function (xm, ym, r, color) {
+      circle(xm, ym, r, color) {
         var x = -r, y = 0, err = 2 - 2 * r;
         /* II. Quadrant */
         do {
@@ -178,7 +178,7 @@ ENGINE = {
         } while (x < 0);
       },
 
-      fillCircle: function (xm, ym, r, color) {
+      fillCircle(xm, ym, r, color) {
         xm = xm|0; ym = ym|0, r = r|0; color = color|0;
         var x = -r, y = 0, err = 2 - 2 * r;
         /* II. Quadrant */
@@ -191,7 +191,7 @@ ENGINE = {
         } while (x < 0);
       },
 
-      rect: function (x1, y1, x2, y2, color) {
+      rect(x1, y1, x2, y2, color) {
         x1 = x1|0;
         x2 = x2|0;
         y1 = y1|0;
@@ -204,7 +204,7 @@ ENGINE = {
         this.line(x1, y1, x1, y2, color);
       },
 
-      fillRect: function (x1, y1, x2, y2, color) {
+      fr(x1, y1, x2, y2, color) {  //draw a filled rectangle
 
         x1 = x1|0;
         x2 = x2|0;
@@ -223,13 +223,13 @@ ENGINE = {
         E.gfx.line(x1,y2, x2, y2, color);
       },
 
-      triangle: function (x1, y1, x2, y2, x3, y3, color) {
+      triangle(x1, y1, x2, y2, x3, y3, color) {
         E.gfx.line(x1,y1, x2,y2, color);
         E.gfx.line(x2,y2, x3,y3, color);
         E.gfx.line(x3,y3, x1,y1, color);
       },
 
-      fillTriangle: function( x1, y1, x2, y2, x3, y3, color ) {
+      fillTriangle( x1, y1, x2, y2, x3, y3, color ) {
 
         var canvasWidth = 256;
         // http://devmaster.net/forums/topic/1145-advanced-rasterization/
@@ -322,7 +322,7 @@ ENGINE = {
         }
       },
 
-      spr: function(sx = 0, sy = 0, sw = 16, sh = 16, x=0, y=0, flipx = false, flipy = false){
+      spr(sx = 0, sy = 0, sw = 16, sh = 16, x=0, y=0, flipx = false, flipy = false){
 
 
         for(var i = 0; i < sh; i++){
@@ -371,7 +371,7 @@ ENGINE = {
         }
       },
 
-      sspr: function(sx = 0, sy = 0, sw = 16, sh = 16, x=0, y=0, dw=16, dh=16, flipx = false, flipy = false){
+      sspr(sx = 0, sy = 0, sw = 16, sh = 16, x=0, y=0, dw=16, dh=16, flipx = false, flipy = false){
 
         var xratio = sw / dw;
         var yratio = sh / dh;
@@ -394,9 +394,7 @@ ENGINE = {
 
       },
 
-
-
-      rspr: function(
+      rspr(
         sx,
         sy,
         sw,
@@ -425,7 +423,7 @@ ENGINE = {
        var scaleFactor = 1.0 / scale;
 
        var cos = Math.cos(-angle) * scaleFactor;
-        var sin = Math.sin(-angle) * scaleFactor;
+       var sin = Math.sin(-angle) * scaleFactor;
 
        for(let y = startY; y < endY; y++){
           for(let x = startX; x < endX; x++){
@@ -447,9 +445,9 @@ ENGINE = {
        } //end outer y loop
       },
 
-      checker: function(nRow, nCol, color) {
-        var w = 256;
-        var h = 256;
+      checker(w, h, nRow, nCol, color) {
+        //var w = 256;
+        //var h = 256;
         var x = 0;
         var y = 0;
 
@@ -463,7 +461,7 @@ ENGINE = {
           for (var j = 0, col = nCol / 2; j < col; ++j) {
             x = 2 * j * w + (i % 2 ? 0 : w);
             y = i * h;
-            E.gfx.fillRect(x, y, x+w-1, y+h-1, color);
+            E.gfx.fr(x, y, x+w-1, y+h-1, color);
           }
         }
       }
@@ -471,17 +469,17 @@ ENGINE = {
 
     util: {
 
-      toPolarScreen: function(p){
+      toPolarScreen(p){
         let degrees = (360/256) * p.x * 0.0174533;
         let radius = p.y / 2;
         return E.util.polarToPoint(degrees, radius);
       },
 
-      norm: function (value, min, max) {
+      norm(value, min, max) {
         return (value - min) / (max - min);
       },
 
-      dist: function (x0, y0, x1, y1) {
+      dist(x0, y0, x1, y1) {
         if(arguments.length === 2) {
           return this.dist(x0.x, x0.y, y0.x, y0.y);
         }
@@ -491,46 +489,46 @@ ENGINE = {
       },
 
 
-      polarToPoint: function (angle, radius) {
+      polarToPoint(angle, radius) {
         return {
           x: Math.cos(angle) * radius,
           y: Math.sin(angle) * radius
         };
       },
 
-      pointToPolar: function(p) {
+      pointToPolar(p) {
         return {
           angle: Math.atan2(p.y, p.x),
           radius: this.magnitude(p)
         };
       },
 
-      magnitude: function(p) {
+      magnitude(p) {
         return this.dist(0, 0, p.x, p.y);
       },
 
-      scale: function(p) {
+      scale(p) {
 
       }
 
 
     },
 
-    canvasInit: function () {
+    canvasInit() {
 
-      E.canvas = document.getElementById('canvas');
+      E.C = document.getElementById('canvas');
       E.ctx = canvas.getContext('2d');
-      E.canvas.width = window.innerWidth;
-      E.canvas.height = window.innerHeight;
+      E.C.width = window.innerWidth;
+      E.C.height = window.innerHeight;
       E.ctx.imageSmoothingEnabled = false;
       E.ctx.mozImageSmoothingEnabled = false;
 
-      E.smallcanvas = document.createElement('canvas');
-      E.smallctx = E.smallcanvas.getContext('2d');
-      E.smallcanvas.width = 256;
-      E.smallcanvas.height = 256;
-      E.canvasHeight = E.smallcanvas.height;
-      E.canvasWidth = E.smallcanvas.width;
+      E.sc = document.createElement('canvas');
+      E.smallctx = E.sc.getContext('2d');
+      E.sc.width = 256;
+      E.sc.height = 256;
+      E.canvasHeight = E.sc.height;
+      E.canvasWidth = E.sc.width;
       E.imageData = E.smallctx.getImageData(0, 0, E.canvasWidth, E.canvasHeight);
 
       E.buf = new ArrayBuffer(E.imageData.data.length);
@@ -544,7 +542,7 @@ ENGINE = {
 
     },
 
-    render: function () {
+    render() {
 
       var i = 0x10000;  // display is first 0x10000 bytes of ram
 
@@ -568,7 +566,7 @@ ENGINE = {
       E.ctx.imageSmoothingEnabled = false;
       E.ctx.mozImageSmoothingEnabled = false;
 
-      E.ctx.drawImage(E.smallcanvas, 0, 0, 255, 255, E.compositeOrigin, 0, E.compositeSize, E.compositeSize);
+      E.ctx.drawImage(E.sc, 0, 0, 255, 255, E.compositeOrigin, 0, E.compositeSize, E.compositeSize);
 
     },
 

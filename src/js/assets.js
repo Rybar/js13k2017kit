@@ -30,7 +30,7 @@ E.assets = {
     "lfo_freq": 4,
     "lfo_amt": 27,
     "lfo_waveform": 1
-}
+    }
   },
   song: {
       "rowLen": 5513,

@@ -17,7 +17,7 @@ E.player = {
     this.radius = 12;
     this.xvel = 0;
     this.yvel = 0;
-    this.xspeed = 200;
+    this.xspeed = 400;
     this.yspeed = 400;
     this.drag = .6;
   },
@@ -35,10 +35,10 @@ E.player = {
 
     //player movement
     if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
-        E.player.xvel = - E.player.xspeed;
+        E.player.xvel =  E.player.xspeed;
     }
     if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
-        E.player.xvel = E.player.xspeed;
+        E.player.xvel =  - E.player.xspeed;
     }
     if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
       E.player.yvel = -E.player.yspeed;
@@ -60,7 +60,7 @@ E.player = {
     if(E.player.x < 0){
       E.player.x = 256;
     }
-    if(E.player.y > 365){
+    if(E.player.y > 256){
       E.player.y = 0;
     }
     if(E.player.y < 0){
@@ -77,17 +77,16 @@ E.player = {
     // let degrees = (360/256) * E.player.x * 0.0174533;
     // let radius = (E.player.y / 2);
 
-    let playerDrawPoint = E.util.toPolarScreen({x:E.player.x, y:E.player.y});
+    // let playerDrawPoint = E.util.toPolarScreen({x:E.player.x, y:E.player.y});
+    //
+    // let distFromCenter = E.util.dist(playerDrawPoint.x+128, playerDrawPoint.y+128, 128,128);
+    //
+    // let playerSizeFactor = E.util.norm(distFromCenter, 0, 128);
 
-    let distFromCenter = E.util.dist(playerDrawPoint.x+128, playerDrawPoint.y+128, 128,128);
-
-    let playerSizeFactor = E.util.norm(distFromCenter, 0, 128);
-
-    E.renderTarget = E.page1;
+    //E.renderTarget = E.screen;
     //E.gfx.fillCircle(playerDrawPoint.x+128, playerDrawPoint.y+128, E.player.radius * playerSizeFactor, 21);
-    E.renderSource = E.page5;
-    E.gfx.rspr(0,0,16,16, playerDrawPoint.x+128, playerDrawPoint.y+128, playerSizeFactor*3, 360/256*E.player.x*-1);
 
+    E.gfx.fillCircle(this.x, this.y, this.radius, 21);
 
 
 
