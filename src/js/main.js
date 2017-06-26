@@ -28,22 +28,22 @@ init = function(){
     ],
 
     callbacks: {
-      onenterboot: function (event, from, to) {
+      onenterboot(event, from, to) {
         states.boot.onenter(event, from, to)
       },
-      onentermenu: function (event, from, to) {
+      onentermenu(event, from, to) {
         states.menu.onenter(event, from, to)
       },
-      onleavemenu: function (event, from, to) {
+      onleavemenu(event, from, to) {
         states.menu.onexit(event, from, to)
       },
-      onentergame: function (event, from, to) {
+      onentergame(event, from, to) {
         states.game.onenter(event, from, to)
       },
-      onleavegame: function (event, from, to) {
+      onleavegame(event, from, to) {
         states.game.onexit(event, from, to)
       },
-      onentergameover: function (event, from, to) {
+      onentergameover(event, from, to) {
         states.gameover.onenter(event, from, to)
       }
     }
@@ -83,12 +83,12 @@ init = function(){
 
 },
 
-stopCapture = function(e){
+stopCapture = (e) => {
   E.capturer.stop();
   E.capturer.save();
 }
 
-loop = function(){
+loop = () => {
   stats.begin();
 
   //game timer

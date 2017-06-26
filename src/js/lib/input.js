@@ -18,25 +18,25 @@
         p: 80,
         r: 82,
 
-        isDown: function (keyCode) {
+        isDown(keyCode) {
             return this._pressed[keyCode];
         },
 
-        justReleased: function (keyCode) {
+        justReleased(keyCode) {
             return this._released[keyCode];
         },
 
-        onKeydown: function (event) {
+        onKeydown(event) {
             this._pressed[event.keyCode] = true;
         },
 
-        onKeyup: function (event) {
+        onKeyup(event) {
             this._released[event.keyCode] = true;
             delete this._pressed[event.keyCode];
 
         },
 
-        update: function () {
+        update() {
             this._released = {};
         }
     };

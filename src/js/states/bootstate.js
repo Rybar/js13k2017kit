@@ -1,6 +1,6 @@
 states.boot = {
 
-    onenter: function(event, from, to){
+    onenter (event, from, to){
       E.sounds = {};
       if(audioCtx){audioCtx.close()};
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -22,12 +22,12 @@ states.boot = {
 
     },
 
-    onexit: function(event, from, to){
+    onexit (event, from, to){
 
 
     },
 
-    step: function(dt) {
+    step (dt) {
 
         if(Key.isDown(Key.p)){
           if(fsm.current == 'boot'){
@@ -37,7 +37,7 @@ states.boot = {
 
     },
 
-    render: function(dt) {
+    render (dt) {
 
         E.gfx.fr(0,0,256,256, 0);
 

@@ -11,7 +11,7 @@ E.player = {
     x: 0, y:0, xvel: 0, yvel: 0
   },
 
-  init: function(){
+  init (){
     this.x = 64;
     this.y =  230;
     this.radius = 12;
@@ -22,7 +22,7 @@ E.player = {
     this.drag = .6;
   },
 
-  update: function(dt) {
+  update (dt) {
     E.player.bullet.x = E.player.x;
     E.player.bullet.y = E.player.y;
     E.player.xvel *= E.player.drag;
@@ -72,7 +72,7 @@ E.player = {
 
   },
 
-  draw: function(dt) {
+  draw (dt) {
 
     // let degrees = (360/256) * E.player.x * 0.0174533;
     // let radius = (E.player.y / 2);

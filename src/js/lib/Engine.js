@@ -10,40 +10,6 @@ ENGINE = {
   page6: 0x60000,
   page7: 0x70000,
 
-  //color enum
-  // Black: 0,
-  // Valhalla: 1,
-  // LouLou: 2,
-  // OiledCedar: 3,
-  // Rope: 4,
-  // TahitiGold: 5,
-  // Twine: 6,
-  // Pancho: 7,
-  // GoldenFizz: 8,
-  // Atlantis: 9,
-  // Christi: 10,
-  // ElfGreen: 11,
-  // Dell: 12,
-  // Verdigris: 13,
-  // Opal: 14,
-  // DeepKoamaru: 15,
-  // VeniceBlue: 16,
-  // RoyalBlue: 17,
-  // Cornflower: 18,
-  // Viking: 19,
-  // LightSteelBlue: 20,
-  // White: 21,
-  // Heather: 22,
-  // Topaz: 23,
-  // DimGray: 24,
-  // SmokeyAsh: 25,
-  // Clairvoyant: 26,
-  // Red: 27,
-  // Mandy: 28,
-  // PinkPlum: 29,
-  // RainForest: 30,
-  // Stinger: 31,
-
   //DB32 Palette
   colors: [0xff000000, 0xff342022, 0xff3c2845, 0xff313966, 0xff3b568f, 0xff2671df, 0xff66a0d9, 0xff9ac3ee, 0xff36f2fb,
     0xff50e599, 0xff30be6a, 0xff6e9437, 0xff2f694b, 0xff244b52, 0xff393c32, 0xff743f3f, 0xff826030, 0xffe16e5b,
@@ -90,7 +56,7 @@ ENGINE = {
 
     gfx: {
 
-      clear: function(color){
+      clear(color){
         E.ram.fill(color, E.renderTarget, E.renderTarget + 0x10000);
       },
 
@@ -191,11 +157,11 @@ ENGINE = {
         } while (x < 0);
       },
 
-      rect(x1, y1, x2, y2, color) {
-        x1 = x1|0;
-        x2 = x2|0;
-        y1 = y1|0;
-        y2 = y2|0;
+      rect(x, y, w, h, color) {
+        x1 = x|0;
+        y1 = y|0;
+        x2 = (x+w)|0;
+        y2 = (y+h)|0;
 
 
         this.line(x1,y1, x2, y1, color);
@@ -204,12 +170,12 @@ ENGINE = {
         this.line(x1, y1, x1, y2, color);
       },
 
-      fr(x1, y1, x2, y2, color) {  //draw a filled rectangle
+      fr(x, y, w, h, color) {  //draw a filled rectangle
 
-        x1 = x1|0;
-        x2 = x2|0;
-        y1 = y1|0;
-        y2 = y2|0;
+        x1 = x|0;
+        y1 = y|0;
+        x2 = (x+w)|0;
+        y2 = (y+h)|0;
 
         var i = Math.abs(y2 - y1);
         E.gfx.line(x1, y1, x2, y1, color);
@@ -394,16 +360,8 @@ ENGINE = {
 
       },
 
-      rspr(
-        sx,
-        sy,
-        sw,
-        sh,
-        destCenterX,
-        destCenterY,
-        scale,
-        angle
-      ){
+      rspr( sx, sy, sw, sh, destCenterX, destCenterY, scale, angle ){
+
         angle = angle * 0.0174533 //convert to radians in place
         var sourceCenterX = sx + sw / 2;
         var sourceCenterY = sy + sh / 2;
@@ -461,7 +419,7 @@ ENGINE = {
           for (var j = 0, col = nCol / 2; j < col; ++j) {
             x = 2 * j * w + (i % 2 ? 0 : w);
             y = i * h;
-            E.gfx.fr(x, y, x+w-1, y+h-1, color);
+            E.gfx.fr(x, y, w-1, h-1, color);
           }
         }
       }
@@ -475,7 +433,7 @@ ENGINE = {
         return E.util.polarToPoint(degrees, radius);
       },
 
-      norm(value, min, max) {
+      norm(value, min, max){
         return (value - min) / (max - min);
       },
 
@@ -514,7 +472,7 @@ ENGINE = {
 
     },
 
-    canvasInit() {
+    canvasInit: function() {
 
       E.C = document.getElementById('canvas');
       E.ctx = canvas.getContext('2d');
@@ -542,7 +500,7 @@ ENGINE = {
 
     },
 
-    render() {
+    render: function() {
 
       var i = 0x10000;  // display is first 0x10000 bytes of ram
 

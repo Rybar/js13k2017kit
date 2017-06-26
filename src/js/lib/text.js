@@ -1,6 +1,6 @@
 
 	Txt = {
-		textLine: function (opt) {
+		textLine(opt) {
 
 			var textLength = opt.text.length,
 				size = 5;
@@ -25,8 +25,8 @@
 								E.gfx.fr(
 								opt.x + ( x * opt.scale ) + ( ( size * opt.scale ) + opt.hspacing ) * i,
 								opt.y + (y * opt.scale),
-								opt.x + ( x * opt.scale ) + ( ( size * opt.scale ) + opt.hspacing ) * i + opt.scale,
-								opt.y + (y * opt.scale) + opt.scale,
+								opt.scale,
+								opt.scale,
 								opt.color);
 							}
 								//console.log(opt.color);
@@ -37,7 +37,7 @@
 		},
 
 
-		text: function (opt) {
+		text(opt) {
 			var size = 5,
 				letterSize = size * opt.scale,
 				lines = opt.text.split('\n'),

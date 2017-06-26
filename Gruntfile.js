@@ -24,7 +24,7 @@ module.exports = function(grunt) {
 					'src/js/lib/statemachine.js',
 
 					//'src/js/lib/CCapture.all.min.js',
-					'src/js/lib/raymarching.js',
+					//'src/js/lib/raymarching.js',
 					'src/js/assets.js',
 					'src/js/lib/pool.js',
 					//'src/js/lib/entity.js',
