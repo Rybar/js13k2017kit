@@ -56,6 +56,20 @@ states.boot = {
                 render: 1,
                 color: 21,
             });
+
+            Txt.text({
+                    x: 8,
+                    y: 240,
+                    text: "PRESS P TO CONTINUE",
+                    hspacing: 2,
+                    vspacing: 2,
+                    halign: 'left',
+                    valign: 'top',
+                    scale: 1,
+                    snap: 1,
+                    render: 1,
+                    color: 21,
+                });
     },
 
 

@@ -62,11 +62,11 @@ states.game = {
 
         //E.gfx.checker(256, 256, 16,16, 2);
 
-        E.player.draw();
 
-        this.renderColorNumbers();
 
-        this.renderDrawingAPI();
+        //this.renderColorNumbers();
+
+        //this.renderDrawingAPI();
 
         for(i=2500;i--;){
 
@@ -128,6 +128,8 @@ states.game = {
             21 //color
           );
         }
+
+        E.player.draw();
 
     },
 
