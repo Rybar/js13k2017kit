@@ -3,6 +3,8 @@ states.game = {
     onenter () {
       // sound hacky stuff-----------
       E.sounds = {};
+      
+      E.starColors=[0,1,2,15,16,17,18,19,20,21];
 
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
       audioCtx = new AudioContext;
@@ -58,7 +60,7 @@ states.game = {
 
         E.gfx.clear(1);
 
-        E.gfx.checker(256, 256, 16,16,2);
+        E.gfx.checker(256, 256, 16,16, 2);
 
         E.player.draw();
 
@@ -66,15 +68,22 @@ states.game = {
 
         this.renderDrawingAPI();
 
-        for(i=1000;i--;){
+        for(i=4000;i--;){
 
-          Z=130-(E.t*40+i)%130;  //depth
-          s=(60/Z)|0; //scale factor
-          E.gfx.fr(
-            0| (128+1/Z*(-99+i*6e72%199)*128), //x
-            0| (128+(-70+i*8e61%140)/Z*128),  //y
-            s, s, //width height
-            21 //color
+          Z=60-(E.t*50+i)%60;  //depth
+          s=(300/Z)|0; //scale factor
+          // E.gfx.fr( 
+          //   (128+1/Z*(-99+i*6e72%199)*128), //x
+          //   (128+(-70+i*8e61%140)/Z*128),  //y
+          //   s, s, //width height
+          //   21 //color
+          // );
+          
+          E.gfx.pset( 
+            (128+1/Z*(-99+i*6e72%199)*128), //x
+            (128+(-70+i*8e61%140)/Z*128),  //y
+            //s, s, //width height
+            E.starColors[s] //color
           );
         }
 
@@ -121,7 +130,7 @@ states.game = {
 
       E.gfx.line(16*4, 16*5, 16*5, 16*7, 21);
 
-      E.gfx.rect(16*6, 16*5, 16*7-1, 16*7-1, 21);
+      E.gfx.rect(16*6, 16*5, 16, 32, 21);
 
       E.gfx.circle(16*8, 16*6, 16, 21);
     }
