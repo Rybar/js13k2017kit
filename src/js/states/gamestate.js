@@ -3,8 +3,8 @@ states.game = {
     onenter () {
       // sound hacky stuff-----------
       E.sounds = {};
-      
-      E.starColors=[0,1,2,15,16,17,18,19,20,21];
+
+      E.starColors=[15,16,17,18,19,20,21];
 
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
       audioCtx = new AudioContext;
@@ -60,7 +60,7 @@ states.game = {
 
         E.gfx.clear(1);
 
-        E.gfx.checker(256, 256, 16,16, 2);
+        //E.gfx.checker(256, 256, 16,16, 2);
 
         E.player.draw();
 
@@ -68,22 +68,64 @@ states.game = {
 
         this.renderDrawingAPI();
 
-        for(i=4000;i--;){
+        for(i=2500;i--;){
 
           Z=60-(E.t*50+i)%60;  //depth
           s=(300/Z)|0; //scale factor
-          // E.gfx.fr( 
+          // E.gfx.fr(
           //   (128+1/Z*(-99+i*6e72%199)*128), //x
           //   (128+(-70+i*8e61%140)/Z*128),  //y
           //   s, s, //width height
           //   21 //color
           // );
-          
-          E.gfx.pset( 
+
+          E.gfx.pset(
             (128+1/Z*(-99+i*6e72%199)*128), //x
             (128+(-70+i*8e61%140)/Z*128),  //y
             //s, s, //width height
-            E.starColors[s] //color
+            15 //color
+          );
+          Z -= 1;
+          E.gfx.pset(
+            (128+1/Z*(-99+i*6e72%199)*128), //x
+            (128+(-70+i*8e61%140)/Z*128),  //y
+            //s, s, //width height
+            16 //color
+          );
+          Z -= 1;
+          E.gfx.pset(
+            (128+1/Z*(-99+i*6e72%199)*128), //x
+            (128+(-70+i*8e61%140)/Z*128),  //y
+            //s, s, //width height
+            17 //color
+          );
+          Z -= 1;
+          E.gfx.pset(
+            (128+1/Z*(-99+i*6e72%199)*128), //x
+            (128+(-70+i*8e61%140)/Z*128),  //y
+            //s, s, //width height
+            18 //color
+          );
+          Z -= 1;
+          E.gfx.pset(
+            (128+1/Z*(-99+i*6e72%199)*128), //x
+            (128+(-70+i*8e61%140)/Z*128),  //y
+            //s, s, //width height
+            19 //color
+          );
+          Z -= 1;
+          E.gfx.pset(
+            (128+1/Z*(-99+i*6e72%199)*128), //x
+            (128+(-70+i*8e61%140)/Z*128),  //y
+            //s, s, //width height
+            20 //color
+          );
+          Z -= 1;
+          E.gfx.pset(
+            (128+1/Z*(-99+i*6e72%199)*128), //x
+            (128+(-70+i*8e61%140)/Z*128),  //y
+            //s, s, //width height
+            21 //color
           );
         }
 
