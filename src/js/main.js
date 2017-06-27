@@ -65,14 +65,14 @@ init = function(){
   window.addEventListener('focus', function (event) {
     paused = false;
   }, false);
-  window.addEventListener('resize', function(){
-    E.canvas.width = window.innerWidth;
-    E.canvas.height = window.innerHeight;
+  window.addEventListener('resize', function(event){
+    E.C.width = window.innerWidth;
+    E.C.height = window.innerHeight;
   } );
 
   //init vid capture
-  //E.capturer = new CCapture( {format: 'gif', workersPath: ''});
-//  E.capturer.start();
+//  E.capturer = new CCapture( {format: 'gif', workersPath: ''});
+//E.capturer.start();
 
   //state machine
   fsm.load();
@@ -84,8 +84,8 @@ init = function(){
 },
 
 stopCapture = (e) => {
-  E.capturer.stop();
-  E.capturer.save();
+  //E.capturer.stop();
+  //E.capturer.save();
 }
 
 loop = () => {
@@ -106,7 +106,7 @@ loop = () => {
   E.render();
 
   //GIF capture
-  //E.capturer.capture(E.canvas);
+  //E.capturer.capture(E.C);
 
   stats.end();
   requestAnimationFrame(loop);
