@@ -30,8 +30,8 @@ states.boot = {
     step (dt) {
 
         if(Key.isDown(Key.p)){
-          if(fsm.current == 'boot'){
-            fsm.ready();
+          if(E.state == 'boot'){
+            E.state = 'game';
           }
         }
 

@@ -21,7 +21,7 @@ module.exports = function(grunt) {
 				src  : [
 					'src/js/first.js',
 					'src/js/lib/Engine.js',
-					'src/js/lib/statemachine.js',
+					//'src/js/lib/statemachine.js',
 
 					//'src/js/lib/CCapture.all.min.js',
 					//'src/js/lib/raymarching.js',
@@ -31,11 +31,11 @@ module.exports = function(grunt) {
 					'src/js/particle.js',
 
 					'src/js/lib/sonantx.js',
-					'src/js/lib/stats.js',
+					//'src/js/lib/stats.js',
 					'src/js/lib/input.js',
 					'src/js/lib/text.js',
 
-					'src/js/states/bootstate.js',
+					//'src/js/states/bootstate.js',
 					'src/js/states/gameoverstate.js',
 					'src/js/states/menustate.js',
 					'src/js/states/gamestate.js',

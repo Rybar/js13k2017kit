@@ -16,17 +16,11 @@ ENGINE = {
     0xffff9b63, 0xffe4cd5f, 0xfffcdbcb, 0xffffffff, 0xffb7ad9b, 0xff877e84, 0xff6a6a69, 0xff525659, 0xff8a4276,
     0xff3232ac, 0xff6357d9, 0xffba7bd7, 0xff4a978f, 0xff306f8a],
 
-    //colors: [0xff000000, 0xff000000, 0xffff55ff, 0xffffff55, 0xffffffff ], //cga palette
-
-    //    brightness: [0,1,2,14,3,15,13,27,26,25,16,4,12,24,31,28,17,23,11,5,30,29,18,6,10,22,19,7,9,20,8,21],
+    //brightness: [0,1,2,14,3,15,13,27,26,25,16,4,12,24,31,28,17,23,11,5,30,29,18,6,10,22,19,7,9,20,8,21],
 
     palDefault: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
 
-    //palDefault: [0,1,2,3,4], //cga palette
-
     pal: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
-
-    //pal: [0, 1, 2, 3, 4], //cga palette
 
     renderTarget: 0x00000,
 
@@ -126,7 +120,6 @@ ENGINE = {
         var x = -r, y = 0, err = 2 - 2 * r;
         /* II. Quadrant */
         do {
-
           this.pset(xm - x, ym + y, color);
           /*   I. Quadrant */
           this.pset(xm - y, ym - x, color);
@@ -425,52 +418,52 @@ ENGINE = {
       }
     },
 
-    util: {
-
-      toPolarScreen(p){
-        let degrees = (360/256) * p.x * 0.0174533;
-        let radius = p.y / 2;
-        return E.util.polarToPoint(degrees, radius);
-      },
-
-      norm(value, min, max){
-        return (value - min) / (max - min);
-      },
-
-      dist(x0, y0, x1, y1) {
-        if(arguments.length === 2) {
-          return this.dist(x0.x, x0.y, y0.x, y0.y);
-        }
-        var dx = x1 - x0,
-        dy = y1 - y0;
-        return Math.sqrt(dx * dx + dy * dy);
-      },
-
-
-      polarToPoint(angle, radius) {
-        return {
-          x: Math.cos(angle) * radius,
-          y: Math.sin(angle) * radius
-        };
-      },
-
-      pointToPolar(p) {
-        return {
-          angle: Math.atan2(p.y, p.x),
-          radius: this.magnitude(p)
-        };
-      },
-
-      magnitude(p) {
-        return this.dist(0, 0, p.x, p.y);
-      },
-
-      scale(p) {
-
-      }
-
-
-    },
+    // util: {
+    //
+    //   toPolarScreen(p){
+    //     let degrees = (360/256) * p.x * 0.0174533;
+    //     let radius = p.y / 2;
+    //     return E.util.polarToPoint(degrees, radius);
+    //   },
+    //
+    //   norm(value, min, max){
+    //     return (value - min) / (max - min);
+    //   },
+    //
+    //   dist(x0, y0, x1, y1) {
+    //     if(arguments.length === 2) {
+    //       return this.dist(x0.x, x0.y, y0.x, y0.y);
+    //     }
+    //     var dx = x1 - x0,
+    //     dy = y1 - y0;
+    //     return Math.sqrt(dx * dx + dy * dy);
+    //   },
+    //
+    //
+    //   polarToPoint(angle, radius) {
+    //     return {
+    //       x: Math.cos(angle) * radius,
+    //       y: Math.sin(angle) * radius
+    //     };
+    //   },
+    //
+    //   pointToPolar(p) {
+    //     return {
+    //       angle: Math.atan2(p.y, p.x),
+    //       radius: this.magnitude(p)
+    //     };
+    //   },
+    //
+    //   magnitude(p) {
+    //     return this.dist(0, 0, p.x, p.y);
+    //   },
+    //
+    //   scale(p) {
+    //
+    //   }
+    //
+    //
+    // },
 
     canvasInit: function() {
 
@@ -490,7 +483,7 @@ ENGINE = {
       E.imageData = E.smallctx.getImageData(0, 0, E.canvasWidth, E.canvasHeight);
 
       E.buf = new ArrayBuffer(E.imageData.data.length);
-      E.buf8 = new Uint8ClampedArray(E.buf);
+      E.buf8 = new Uint8Array(E.buf);
       E.data = new Uint32Array(E.buf);
       E.ram = new Uint8ClampedArray(0x80000);
 
@@ -531,7 +524,3 @@ ENGINE = {
   }
 
   var E = ENGINE;
-
-  Number.prototype.map = function (in_min, in_max, out_min, out_max) {
-    return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-  }

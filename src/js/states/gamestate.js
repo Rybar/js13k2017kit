@@ -1,37 +1,5 @@
 states.game = {
 
-    onenter () {
-      // sound hacky stuff-----------
-      E.sounds = {};
-
-      E.starColors=[15,16,17,18,19,20,21];
-
-      window.AudioContext = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioContext;
-
-      let soundGen = new sonantx.MusicGenerator(E.assets.song);
-        soundGen.createAudioBuffer(function(buffer) {
-        //E.sounds.loaded++;
-        E.sounds.song = buffer;
-
-      });
-      // --------end hacky sound stuff
-
-        bulletPool = new Pool(100, Particle);
-
-        bulletPool.init();
-
-        E.songTrigger = false;
-
-        E.player.init();
-
-    },
-
-    onexit (event, from, to){
-
-
-    },
-
     step(dt) {
 
         E.player.update(dt);
@@ -49,9 +17,6 @@ states.game = {
         bulletPool.use();
 
         Key.update();
-
-
-
     },
 
     render(dt) {
@@ -62,72 +27,70 @@ states.game = {
 
         //E.gfx.checker(256, 256, 16,16, 2);
 
-
-
         //this.renderColorNumbers();
 
         //this.renderDrawingAPI();
 
-        for(i=2500;i--;){
-
-          Z=60-(E.t*50+i)%60;  //depth
-          s=(300/Z)|0; //scale factor
-          // E.gfx.fr(
-          //   (128+1/Z*(-99+i*6e72%199)*128), //x
-          //   (128+(-70+i*8e61%140)/Z*128),  //y
-          //   s, s, //width height
-          //   21 //color
-          // );
-
-          E.gfx.pset(
-            (128+1/Z*(-99+i*6e72%199)*128), //x
-            (128+(-70+i*8e61%140)/Z*128),  //y
-            //s, s, //width height
-            15 //color
-          );
-          Z -= 1;
-          E.gfx.pset(
-            (128+1/Z*(-99+i*6e72%199)*128), //x
-            (128+(-70+i*8e61%140)/Z*128),  //y
-            //s, s, //width height
-            16 //color
-          );
-          Z -= 1;
-          E.gfx.pset(
-            (128+1/Z*(-99+i*6e72%199)*128), //x
-            (128+(-70+i*8e61%140)/Z*128),  //y
-            //s, s, //width height
-            17 //color
-          );
-          Z -= 1;
-          E.gfx.pset(
-            (128+1/Z*(-99+i*6e72%199)*128), //x
-            (128+(-70+i*8e61%140)/Z*128),  //y
-            //s, s, //width height
-            18 //color
-          );
-          Z -= 1;
-          E.gfx.pset(
-            (128+1/Z*(-99+i*6e72%199)*128), //x
-            (128+(-70+i*8e61%140)/Z*128),  //y
-            //s, s, //width height
-            19 //color
-          );
-          Z -= 1;
-          E.gfx.pset(
-            (128+1/Z*(-99+i*6e72%199)*128), //x
-            (128+(-70+i*8e61%140)/Z*128),  //y
-            //s, s, //width height
-            20 //color
-          );
-          Z -= 1;
-          E.gfx.pset(
-            (128+1/Z*(-99+i*6e72%199)*128), //x
-            (128+(-70+i*8e61%140)/Z*128),  //y
-            //s, s, //width height
-            21 //color
-          );
-        }
+        // for(i=2500;i--;){
+        //
+        //   Z=60-(E.t*50+i)%60;  //depth
+        //   s=(300/Z)|0; //scale factor
+        //   // E.gfx.fr(
+        //   //   (128+1/Z*(-99+i*6e72%199)*128), //x
+        //   //   (128+(-70+i*8e61%140)/Z*128),  //y
+        //   //   s, s, //width height
+        //   //   21 //color
+        //   // );
+        //
+        //   E.gfx.pset(
+        //     (128+1/Z*(-99+i*6e72%199)*128), //x
+        //     (128+(-70+i*8e61%140)/Z*128),  //y
+        //     //s, s, //width height
+        //     15 //color
+        //   );
+        //   Z -= 1;
+        //   E.gfx.pset(
+        //     (128+1/Z*(-99+i*6e72%199)*128), //x
+        //     (128+(-70+i*8e61%140)/Z*128),  //y
+        //     //s, s, //width height
+        //     16 //color
+        //   );
+        //   Z -= 1;
+        //   E.gfx.pset(
+        //     (128+1/Z*(-99+i*6e72%199)*128), //x
+        //     (128+(-70+i*8e61%140)/Z*128),  //y
+        //     //s, s, //width height
+        //     17 //color
+        //   );
+        //   Z -= 1;
+        //   E.gfx.pset(
+        //     (128+1/Z*(-99+i*6e72%199)*128), //x
+        //     (128+(-70+i*8e61%140)/Z*128),  //y
+        //     //s, s, //width height
+        //     18 //color
+        //   );
+        //   Z -= 1;
+        //   E.gfx.pset(
+        //     (128+1/Z*(-99+i*6e72%199)*128), //x
+        //     (128+(-70+i*8e61%140)/Z*128),  //y
+        //     //s, s, //width height
+        //     19 //color
+        //   );
+        //   Z -= 1;
+        //   E.gfx.pset(
+        //     (128+1/Z*(-99+i*6e72%199)*128), //x
+        //     (128+(-70+i*8e61%140)/Z*128),  //y
+        //     //s, s, //width height
+        //     20 //color
+        //   );
+        //   Z -= 1;
+        //   E.gfx.pset(
+        //     (128+1/Z*(-99+i*6e72%199)*128), //x
+        //     (128+(-70+i*8e61%140)/Z*128),  //y
+        //     //s, s, //width height
+        //     21 //color
+        //   );
+        // }
 
         E.player.draw();
 

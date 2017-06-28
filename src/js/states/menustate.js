@@ -1,19 +1,10 @@
 states.menu = {
 
-    onenter: function(event, from, to){
-
-    },
-
-    onexit: function(event, from, to){
-
-
-    },
-
     step: function(dt) {
 
         //game update
-        if(Key.isDown(Key.r)){
-          fsm.play();
+        if(Key.isDown(Key.p)){
+          E.state = 'game';
         }
 
     },

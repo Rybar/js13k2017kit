@@ -1,18 +1,9 @@
 states.gameover = {
 
-    onenter: function(event, from, to){
-
-    },
-
-    onexit: function(event, from, to){
-
-
-    },
-
     step: function(dt) {
 
         if(Key.isDown(Key.r)){
-          fsm.reset();
+          E.state = 'menu';
         }
 
     },

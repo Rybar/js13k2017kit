@@ -64,7 +64,7 @@ E.player = {
       E.player.y = 0;
     }
     if(E.player.y < 0){
-      fsm.lose();
+      E.state = 'gameover';
       E.player.y = 256;
     }
     //end world wrap for player

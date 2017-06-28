@@ -7,48 +7,85 @@ init = function(){
   E.dt = 0;
   E.now = 0;
   E.t = 0;
+  E.moveX = 0;
+  E.speedFactor = .6;
+  E.songTrigger = false;
+  E.state = 'menu';
 
 
-  stats = new Stats();
-  document.body.appendChild( stats.dom );
+  bulletPool = new Pool(100, Particle);
+
+  E.sounds = {};
+
+  //stats = new Stats();
+  //document.body.appendChild( stats.dom );
 
   E.canvasInit();
-  //E.game.create();
 
-  fsm = StateMachine.create({
+  E.starColors=[15,16,17,18,19,20,21];
 
-    initial: "init",
+  bulletPool.init();
 
-    events: [
-      {name: 'load', from: 'init', to: 'boot'},
-      {name: 'ready', from: 'boot', to: 'game'},
-      {name: 'play', from: ['menu', 'gameover'], to: 'game'},
-      {name: 'lose', from: ['game', 'gameover'], to: 'gameover'},
-      {name: 'reset', from: ['init', 'boot', 'menu', 'gameover', 'game'], to: 'boot'},
-    ],
+  E.player.init();
 
-    callbacks: {
-      onenterboot(event, from, to) {
-        states.boot.onenter(event, from, to)
-      },
-      onentermenu(event, from, to) {
-        states.menu.onenter(event, from, to)
-      },
-      onleavemenu(event, from, to) {
-        states.menu.onexit(event, from, to)
-      },
-      onentergame(event, from, to) {
-        states.game.onenter(event, from, to)
-      },
-      onleavegame(event, from, to) {
-        states.game.onexit(event, from, to)
-      },
-      onentergameover(event, from, to) {
-        states.gameover.onenter(event, from, to)
-      }
-    }
+  soundInit();
+
+  eventInit();
+
+  //init vid capture
+  //E.capturer = new CCapture( {format: 'gif', workersPath: ''});
+  //E.capturer.start();
+
+  //start the game loop
+  loop();
+
+},
+
+stopCapture = (e) => {
+  //E.capturer.stop();
+  //E.capturer.save();
+}
+
+loop = () => {
+//  stats.begin();
+
+  //game timer
+  let now = new Date().getTime();
+  E.dt = Math.min(1, (now - E.last) / 1000);
+  E.t += E.dt;
+
+  //draw current state to buffer
+  states[E.state].render();
+
+  //update
+  states[E.state].step(E.dt);
+  E.last = now;
+
+  //draw buffer to screen
+  E.render();
+
+  //GIF capture
+  //E.capturer.capture(E.C);
+
+  //stats.end();
+  requestAnimationFrame(loop);
+}
+
+soundInit = () => {
+
+  E.sounds = {};
+  if(audioCtx){audioCtx.close()};
+  window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  if(!audioCtx) audioCtx = new AudioContext;
+
+  let soundGen = new sonantx.MusicGenerator(E.assets.song);
+  soundGen.createAudioBuffer(function(buffer) {
+    E.sounds.song = buffer;
   });
 
+}
+
+eventInit = () => {
   //initialize keypress event listeners
   window.addEventListener('keyup', function (event) {
     Key.onKeyup(event);
@@ -69,45 +106,4 @@ init = function(){
     E.C.width = window.innerWidth;
     E.C.height = window.innerHeight;
   } );
-
-  //init vid capture
-//  E.capturer = new CCapture( {format: 'gif', workersPath: ''});
-//E.capturer.start();
-
-  //state machine
-  fsm.load();
-  //console.log(fsm);
-
-  //start the game loop
-  loop();
-
-},
-
-stopCapture = (e) => {
-  //E.capturer.stop();
-  //E.capturer.save();
-}
-
-loop = () => {
-  stats.begin();
-
-  //game timer
-  let now = new Date().getTime();
-  E.dt = Math.min(1, (now - E.last) / 1000);
-  E.t += E.dt;
-
-  states[fsm.current].render();
-
-  //update
-  states[fsm.current].step(E.dt);
-  E.last = now;
-
-  //draw to screen
-  E.render();
-
-  //GIF capture
-  //E.capturer.capture(E.C);
-
-  stats.end();
-  requestAnimationFrame(loop);
 }
