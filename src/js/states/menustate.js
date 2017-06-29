@@ -4,23 +4,23 @@ states.menu = {
 
         //game update
         if(Key.isDown(Key.p)){
-          E.state = 'game';
+          state = 'game';
         }
 
     },
 
     render: function(dt) {
 
-      E.gfx.fr(0,0,256,256, 0);
+      fr(0,0,256,256, 0);
 
-      E.gfx.fr(0,0,64,64,2);
+      fr(0,0,64,64,2);
 
       Txt.text({
               x: 128,
-            y: 40 + Math.sin(E.t*2.5)*15,
+            y: 40 + Math.sin(t*2.5)*15,
               text: 'MENU',
-              hspacing: 8 + Math.cos(E.t*2.9)*4,
-              vspacing: 15 + Math.sin(E.t*3.5)*5,
+              hspacing: 8 + Math.cos(t*2.9)*4,
+              vspacing: 15 + Math.sin(t*3.5)*5,
               halign: 'center',
               valign: 'top',
               scale: 10,

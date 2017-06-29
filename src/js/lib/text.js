@@ -5,7 +5,7 @@
 			var textLength = opt.text.length,
 				size = 5;
 			for (var i = 0; i < textLength; i++) {
-				var letter = E.assets.letters[( opt.text.charAt(i) )] || E.assets.letters['unknown'];
+				var letter = assets.letters[( opt.text.charAt(i) )] || assets.letters['unknown'];
 				for (var y = 0; y < size; y++) {
 					//var g = (Math.random() > opt.glitchChance) * opt.glitchFactor;
 					for (var x = 0; x < size; x++) {
@@ -14,7 +14,7 @@
 							//var gy = (Math.random() < gl.ych || 0) * (Math.random()-.5) * gl.yamt || 0;
 
 							if(opt.scale === 1){
-								E.gfx.pset(
+								pset(
 									opt.x + ( x * opt.scale ) + ( ( size * opt.scale ) + opt.hspacing ) * i,
 									opt.y + (y * opt.scale),
 									opt.color
@@ -22,7 +22,7 @@
 							}
 
 							else {
-								E.gfx.fr(
+								fr(
 								opt.x + ( x * opt.scale ) + ( ( size * opt.scale ) + opt.hspacing ) * i,
 								opt.y + (y * opt.scale),
 								opt.scale,

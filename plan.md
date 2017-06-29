@@ -3,4 +3,4 @@
 
 //input doesn't need refactored, is only 100 bytes-ish.
 
-//
+//flatten any object structure that isn't necessary, remove object literals where possible.

@@ -1,4 +1,4 @@
-E.assets = {
+assets = {
   sounds: {
     laserOne: {
     "osc1_oct": 6,

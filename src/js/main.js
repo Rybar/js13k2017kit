@@ -1,40 +1,38 @@
 
-var E = ENGINE;
-
 init = function(){
 
-  E.last = 0;
-  E.dt = 0;
-  E.now = 0;
-  E.t = 0;
-  E.moveX = 0;
-  E.speedFactor = .6;
-  E.songTrigger = false;
-  E.state = 'menu';
+  last = 0;
+  dt = 0;
+  now = 0;
+  t = 0;
+  moveX = 0;
+  speedFactor = .6;
+  songTrigger = false;
+  state = 'menu';
 
 
   bulletPool = new Pool(100, Particle);
 
-  E.sounds = {};
+  sounds = {};
 
   //stats = new Stats();
   //document.body.appendChild( stats.dom );
 
-  E.canvasInit();
+  //canvasInit();
 
-  E.starColors=[15,16,17,18,19,20,21];
+  starColors=[15,16,17,18,19,20,21];
 
   bulletPool.init();
 
-  E.player.init();
+  player.init();
 
   soundInit();
 
   eventInit();
 
   //init vid capture
-  //E.capturer = new CCapture( {format: 'gif', workersPath: ''});
-  //E.capturer.start();
+  //capturer = new CCapture( {format: 'gif', workersPath: ''});
+  //capturer.start();
 
   //start the game loop
   loop();
@@ -42,8 +40,8 @@ init = function(){
 },
 
 stopCapture = (e) => {
-  //E.capturer.stop();
-  //E.capturer.save();
+  //capturer.stop();
+  //capturer.save();
 }
 
 loop = () => {
@@ -51,21 +49,21 @@ loop = () => {
 
   //game timer
   let now = new Date().getTime();
-  E.dt = Math.min(1, (now - E.last) / 1000);
-  E.t += E.dt;
+  dt = Math.min(1, (now - last) / 1000);
+  t += dt;
 
   //draw current state to buffer
-  states[E.state].render();
+  states[state].render();
 
   //update
-  states[E.state].step(E.dt);
-  E.last = now;
+  states[state].step(dt);
+  last = now;
 
   //draw buffer to screen
-  E.render();
+  render();
 
   //GIF capture
-  //E.capturer.capture(E.C);
+  //capturer.capture(C);
 
   //stats.end();
   requestAnimationFrame(loop);
@@ -73,14 +71,14 @@ loop = () => {
 
 soundInit = () => {
 
-  E.sounds = {};
+  sounds = {};
   if(audioCtx){audioCtx.close()};
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
   if(!audioCtx) audioCtx = new AudioContext;
 
-  let soundGen = new sonantx.MusicGenerator(E.assets.song);
+  let soundGen = new sonantx.MusicGenerator(assets.song);
   soundGen.createAudioBuffer(function(buffer) {
-    E.sounds.song = buffer;
+    sounds.song = buffer;
   });
 
 }
@@ -103,7 +101,7 @@ eventInit = () => {
     paused = false;
   }, false);
   window.addEventListener('resize', function(event){
-    E.C.width = window.innerWidth;
-    E.C.height = window.innerHeight;
+    C.width = window.innerWidth;
+    C.height = window.innerHeight;
   } );
 }

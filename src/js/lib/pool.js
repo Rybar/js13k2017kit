@@ -46,7 +46,7 @@ function Pool(poolSize, objClass) {
             //.log('pool use iteration');
             // Only use objects that are currently in use
             if (pool[i].inUse) {
-                if (pool[i].use(E.dt)) {
+                if (pool[i].use(dt)) {
                     pool[i].clear();
                     pool.push((pool.splice(i,1))[0]);
                 }

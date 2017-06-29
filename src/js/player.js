@@ -1,4 +1,4 @@
-E.player = {
+player = {
   // x: 0,
   // y: 0,
   // radius: 12,
@@ -23,49 +23,49 @@ E.player = {
   },
 
   update (dt) {
-    E.player.bullet.x = E.player.x;
-    E.player.bullet.y = E.player.y;
-    E.player.xvel *= E.player.drag;
-    E.player.yvel *= E.player.drag;
-    let xIntegrate = dt * E.player.xvel;
-    let yIntegrate = dt * E.player.yvel;
+    this.bullet.x = player.x;
+    this.bullet.y = player.y;
+    this.xvel *= player.drag;
+    this.yvel *= player.drag;
+    let xIntegrate = dt * player.xvel;
+    let yIntegrate = dt * player.yvel;
 
-    E.player.x += xIntegrate;
-    E.player.y += yIntegrate;
+    player.x += xIntegrate;
+    player.y += yIntegrate;
 
     //player movement
     if (Key.isDown(Key.d) || Key.isDown(Key.RIGHT)) {
-        E.player.xvel =  E.player.xspeed;
+        player.xvel =  player.xspeed;
     }
     if (Key.isDown(Key.a) || Key.isDown(Key.LEFT)){
-        E.player.xvel =  - E.player.xspeed;
+        player.xvel =  - player.xspeed;
     }
     if(Key.isDown(Key.w) || Key.isDown(Key.UP)){
-      E.player.yvel = -E.player.yspeed;
+      player.yvel = -player.yspeed;
     }
     if(Key.isDown(Key.s) || Key.isDown(Key.DOWN)) {
-      E.player.yvel = E.player.yspeed;
+      player.yvel = player.yspeed;
     }
 
     if(Key.isDown(Key.SPACE || Key.isDown(Key.z))){
-      //E.player.bullet.xvel = E.player.xvel;
-      E.player.bullet.yvel = -350;
-      bulletPool.get(E.player.bullet);
+      //player.bullet.xvel = E.player.xvel;
+      player.bullet.yvel = -350;
+      bulletPool.get(player.bullet);
     }
 
     //world wrap for player
-    if(E.player.x > 256){
-      E.player.x = 0;
+    if(player.x > 256){
+      player.x = 0;
     }
-    if(E.player.x < 0){
-      E.player.x = 256;
+    if(player.x < 0){
+      player.x = 256;
     }
-    if(E.player.y > 256){
-      E.player.y = 0;
+    if(player.y > 256){
+      player.y = 0;
     }
-    if(E.player.y < 0){
-      E.state = 'gameover';
-      E.player.y = 256;
+    if(player.y < 0){
+      state = 'gameover';
+      player.y = 256;
     }
     //end world wrap for player
 
@@ -86,7 +86,7 @@ E.player = {
     //E.renderTarget = E.screen;
     //E.gfx.fillCircle(playerDrawPoint.x+128, playerDrawPoint.y+128, E.player.radius * playerSizeFactor, 21);
 
-    E.gfx.fillCircle(this.x, this.y, this.radius, 21);
+    fillCircle(this.x, this.y, this.radius, 21);
 
 
 

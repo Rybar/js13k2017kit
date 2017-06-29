@@ -20,7 +20,7 @@ function Particle() {
     this.life = opt.life || 1;
     this.remaining = opt.life || 1;
     this.radius = opt.radius || 1;
-    this.color = opt.color || E.WHITE;
+    this.color = opt.color || 21;
     this.dead = false;
   }
 
@@ -29,9 +29,9 @@ function Particle() {
       return true;
     }
     else {
-      this.remaining -= E.dt;
-      this.x += E.dt * this.xvel;
-      this.y += E.dt * this.yvel;
+      this.remaining -= dt;
+      this.x += dt * this.xvel;
+      this.y += dt * this.yvel;
       this.draw();
       //console.log('bullet used/updated');
         if(this.remaining <= 0) {
@@ -57,7 +57,7 @@ function Particle() {
   }
 
   Particle.prototype.draw = function(){
-    E.gfx.circle(this.x, this.y, 0|Math.random()*4, 21);
+    circle(this.x, this.y, 0|Math.random()*4, 21);
   }
 
 
