@@ -141,47 +141,6 @@ sonantx.AudioGenerator = function(mixBuf) {
     this.mixBuf = mixBuf;
     this.waveSize = mixBuf.length / WAVE_CHAN / 2;
 };
-sonantx.AudioGenerator.prototype.getWave = function() {
-    var mixBuf = this.mixBuf;
-    var waveSize = this.waveSize;
-    // Local variables
-    var b, k, x, wave, l1, l2, s, y;
-
-    // Turn critical object properties into local variables (performance)
-    var waveBytes = waveSize * WAVE_CHAN * 2;
-
-    // Convert to a WAVE file (in a binary string)
-    l1 = waveBytes - 8;
-    l2 = l1 - 36;
-    wave = String.fromCharCode(82,73,70,70,
-                               l1 & 255,(l1 >> 8) & 255,(l1 >> 16) & 255,(l1 >> 24) & 255,
-                               87,65,86,69,102,109,116,32,16,0,0,0,1,0,2,0,
-                               68,172,0,0,16,177,2,0,4,0,16,0,100,97,116,97,
-                               l2 & 255,(l2 >> 8) & 255,(l2 >> 16) & 255,(l2 >> 24) & 255);
-    b = 0;
-    while(b < waveBytes)
-    {
-        // This is a GC & speed trick: don't add one char at a time - batch up
-        // larger partial strings
-        x = "";
-        for (k = 0; k < 256 && b < waveBytes; ++k, b += 2)
-        {
-            // Note: We amplify and clamp here
-            y = 4 * (mixBuf[b] + (mixBuf[b+1] << 8) - 32768);
-            y = y < -32768 ? -32768 : (y > 32767 ? 32767 : y);
-            x += String.fromCharCode(y & 255, (y >> 8) & 255);
-        }
-        wave += x;
-    }
-    return wave;
-};
-sonantx.AudioGenerator.prototype.getAudio = function() {
-    var wave = this.getWave();
-    var a = new Audio("data:audio/wav;base64," + btoa(wave));
-    a.preload = "none";
-    a.load();
-    return a;
-};
 sonantx.AudioGenerator.prototype.getAudioBuffer = function(callBack) {
     if (audioCtx === null)
         audioCtx = new AudioContext();

@@ -35,7 +35,6 @@ module.exports = function(grunt) {
 					'src/js/lib/input.js',
 					'src/js/lib/text.js',
 
-					//'src/js/states/bootstate.js',
 					'src/js/states/gameoverstate.js',
 					'src/js/states/menustate.js',
 					'src/js/states/gamestate.js',
@@ -74,25 +73,14 @@ module.exports = function(grunt) {
 			},
 			compressed: {
 				options: {
-					mangle: true,
-					compress: {
-						dead_code: true,
-						drop_debugger: true,
-						sequences: true,
-						properties: true,
-						evaluate: true,
-						loops: true,
-						unused: true,
-						//screw_ie8: true,
-						hoist_funs: true,
-						unsafe: true,
-						unsafe_comps: true,
-						conditionals: true,
-
-						//source-map:
-
-					}
+					reserveDOMCache: true,
+					// nameCache: 'grunt-uglify-cache.json',
+					// exceptionsFiles: [ 'domprops.json' ],
+					mangle: true
+					
+				
 				},
+				
 				files: {
 					'build/game.js':
 						[

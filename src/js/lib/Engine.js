@@ -1,7 +1,8 @@
+//--this gets wrapped in a closure, so no namespace object, compresses better.
 
 var
 C =               document.getElementById('canvas'),
-ctx =             canvas.getContext('2d'),
+ctx =             C.getContext('2d'),
 sc =              document.createElement('canvas'),
 smallctx =        sc.getContext('2d'),
 
@@ -26,6 +27,13 @@ buf =             new ArrayBuffer(imageData.data.length),
 buf8 =            new Uint8Array(buf),
 data =            new Uint32Array(buf),
 ram =             new Uint8ClampedArray(0x80000);
+
+// Exposing all math functions to the global scope
+// Object.getOwnPropertyNames(Math).forEach(function(n){
+//     if(Math[n].call){
+//         this[n] = Math[n];
+//     }
+// });
 
 
 //--------------graphics functions----------------
