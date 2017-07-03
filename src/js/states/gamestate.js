@@ -1,110 +1,132 @@
 states.game = {
 
-    step(dt) {
 
-        player.update(dt);
+  step(dt) {
 
-        //----hacky sound test
-        if(Key.justReleased(Key.z)){
-          songTrigger = true
+    player.update(dt);
+
+    //----hacky sound test
+    if(Key.justReleased(Key.z)){
+
+      songTrigger = true
+    }
+    if(songTrigger){
+      //  playSound(sounds.song, 1, 1, 0);
+      songTrigger = false;
+      incrementState();
+    }
+    //---end hacky sound test
+
+    bulletPool.use();
+
+    Key.update();
+  },
+
+  render(dt) {
+
+    renderTarget = 0x00000;
+
+    switch(demostate){
+
+      case 1:
+        clear(0);
+        let r = 40;
+        for(x=0; x < 256; x+=r){
+          for( y=0; y < 256; y+=r){
+            let A = x-128+Math.sin(t)*r;
+            let B = y-128+Math.cos(t)*r;
+            let s = Math.sqrt(A*A+B*B);
+            circle(x,y, s-8, 21);
+          }
         }
-        if(songTrigger){
-          playSound(sounds.song, 1, 1, 0);
-          songTrigger = false;
+        renderInstructions();
+      break;
+
+      case 2:
+        clear(0);
+        for(let a = 0; a < 2 * Math.PI; a+= 0.7){
+          for(let r = 20; r < 200; r += 9){
+
+            let v = a + .4 * Math.sin(a*8-r/20+t);
+            fillCircle((128+r*Math.cos(v)), 128+r*Math.sin(v), (10-r/12)|0, 10+(r/9%32)|0 );
+
+          }
         }
-        //---end hacky sound test
+        renderInstructions();
+      break;
 
-        bulletPool.use();
+      case 0:
+        //clear(0);
+        for(let u = 0; u < 1; u+=.001){
+          let x = Math.floor(128+128*Math.cos(3*u+t));
+          let y = Math.floor(128+128*Math.sin(5*u+t));
+          y = x^y;
+          pset(x,y,u*32);
+        }
+        renderInstructions();
+      break;
 
-        Key.update();
-    },
-
-    render(dt) {
-
-        renderTarget = 0x00000;
-
+      case 3:
         clear(1);
+        renderColorNumbers();
+        renderDrawingAPI();
+        renderInstructions();
+      break;
 
-        //E.gfx.checker(256, 256, 16,16, 2);
+      case 4:
+        clear(1);
+        let s = 128;
+        let i = t/3;
+        for(let y = -s; y < s; y += 3 ){
+          for(let x = -s; x < s; x += 2 ){
+            pset(s+x+64*Math.cos( (y/s+i)*5 )+y, s+y+64*Math.sin( (x/s+i)*5 )+x, x/8%32)
+          }
+        }
+        renderInstructions();
+      break;
 
-        //this.renderColorNumbers();
+      case 5:
+        clear(0);
+        for(let r = 0; r < 190; r+= 6){
+          for(let a = 0; a < 2*Math.PI; a += 1/r*8){
+            let x = r*Math.cos(a+t);
+            let y = r*Math.sin(a+t);
+            circle(x+128, y+128, 3+3*Math.cos(t*r/8+a*3), r/8%32)
+          }
+        }
+        renderInstructions();
+      break;
 
-        //this.renderDrawingAPI();
+      default:
+        clear(0);
+        renderInstructions();
+      break;
 
-        // for(i=2500;i--;){
-        //
-        //   Z=60-(E.t*50+i)%60;  //depth
-        //   s=(300/Z)|0; //scale factor
-        //   // E.gfx.fr(
-        //   //   (128+1/Z*(-99+i*6e72%199)*128), //x
-        //   //   (128+(-70+i*8e61%140)/Z*128),  //y
-        //   //   s, s, //width height
-        //   //   21 //color
-        //   // );
-        //
-        //   E.gfx.pset(
-        //     (128+1/Z*(-99+i*6e72%199)*128), //x
-        //     (128+(-70+i*8e61%140)/Z*128),  //y
-        //     //s, s, //width height
-        //     15 //color
-        //   );
-        //   Z -= 1;
-        //   E.gfx.pset(
-        //     (128+1/Z*(-99+i*6e72%199)*128), //x
-        //     (128+(-70+i*8e61%140)/Z*128),  //y
-        //     //s, s, //width height
-        //     16 //color
-        //   );
-        //   Z -= 1;
-        //   E.gfx.pset(
-        //     (128+1/Z*(-99+i*6e72%199)*128), //x
-        //     (128+(-70+i*8e61%140)/Z*128),  //y
-        //     //s, s, //width height
-        //     17 //color
-        //   );
-        //   Z -= 1;
-        //   E.gfx.pset(
-        //     (128+1/Z*(-99+i*6e72%199)*128), //x
-        //     (128+(-70+i*8e61%140)/Z*128),  //y
-        //     //s, s, //width height
-        //     18 //color
-        //   );
-        //   Z -= 1;
-        //   E.gfx.pset(
-        //     (128+1/Z*(-99+i*6e72%199)*128), //x
-        //     (128+(-70+i*8e61%140)/Z*128),  //y
-        //     //s, s, //width height
-        //     19 //color
-        //   );
-        //   Z -= 1;
-        //   E.gfx.pset(
-        //     (128+1/Z*(-99+i*6e72%199)*128), //x
-        //     (128+(-70+i*8e61%140)/Z*128),  //y
-        //     //s, s, //width height
-        //     20 //color
-        //   );
-        //   Z -= 1;
-        //   E.gfx.pset(
-        //     (128+1/Z*(-99+i*6e72%199)*128), //x
-        //     (128+(-70+i*8e61%140)/Z*128),  //y
-        //     //s, s, //width height
-        //     21 //color
-        //   );
-        // }
 
-        player.draw();
+    }
 
-    },
+
+
+
+
+  },
 
 
 };
+
+function incrementState(){
+  demostate += 1;
+  if(demostate > 6){
+    demostate = 0;
+  }
+}
 
 function renderColorNumbers(){
 
   for(var i = 0; i < 32; i++){
     Txt.text({
       x: i < 16 ? ( 3+16*i ) : ( 3 + 16* (i-16) ) ,
-      y: i < 16 ? 45 : 45 + 16,
+      y: i < 16 ? 8 : 8 + 16,
       text: i.toString(),
       scale: 1,
       snap: 1,
@@ -116,23 +138,6 @@ function renderColorNumbers(){
       color: i,
     })
   }
-
-
-  Txt.text({
-          x: 8,
-          y: 240,
-          text: "X: "+player.x.toString().substring(0,7) +
-                "\nY: "+player.y.toString().substring(0,7),
-          hspacing: 2,
-          vspacing: 2,
-          halign: 'left',
-          valign: 'top',
-          scale: 1,
-          snap: 1,
-          render: 1,
-          color: 21,
-      });
-
 }
 
 function renderDrawingAPI(){
@@ -143,4 +148,25 @@ function renderDrawingAPI(){
   rect(16*6, 16*5, 16, 32, 21);
 
   circle(16*8, 16*6, 16, 21);
+}
+
+function renderInstructions(){
+
+
+  fr(5,243,256,6,0);
+  Txt.text({
+    x: 5,
+    y: 249,
+    text: "THINGY "+ demostate + ": PRESS Z TO SEE NEXT THINGY",
+    scale: 1,
+    snap: 1,
+    hspacing: 1,
+    vspacing: 2,
+    halign: 'left',
+    valign: 'bottom',
+    render: 1,
+    color: 21,
+  })
+
+
 }

@@ -8,7 +8,9 @@ init = function(){
   moveX = 0;
   speedFactor = .6;
   songTrigger = false;
-  state = 'menu';
+  state = 'game';
+  demostate = 0,
+
 
 
   bulletPool = new Pool(100, Particle);
@@ -17,8 +19,6 @@ init = function(){
 
   //stats = new Stats();
   //document.body.appendChild( stats.dom );
-
-  //canvasInit();
 
   starColors=[15,16,17,18,19,20,21];
 
@@ -72,14 +72,28 @@ loop = () => {
 soundInit = () => {
 
   sounds = {};
-  if(audioCtx){audioCtx.close()};
-  window.AudioContext = window.AudioContext || window.webkitAudioContext;
-  if(!audioCtx) audioCtx = new AudioContext;
+  // if(audioCtx){audioCtx.close()};
+  // window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  // if(!audioCtx) audioCtx = new AudioContext;
+  //
+  // var musicplayer = new CPlayer();
+  // musicplayer.init(assets.songdemo);
+  // var done = false;
+  // songWave = setInterval(function () {
+  //   if (done) {
+  //    return musicplayer.createWave();
+  //   }
+  //   done = musicplayer.generate() >= 1;
+  // });
 
-  let soundGen = new sonantx.MusicGenerator(assets.song);
-  soundGen.createAudioBuffer(function(buffer) {
-    sounds.song = buffer;
-  });
+
+  //
+  // let soundGen = new sonantx.MusicGenerator(assets.song);
+  // soundGen.createAudioBuffer(function(buffer) {
+  //   sounds.song = buffer;
+  // });
+
+
 
 }
 
@@ -100,8 +114,4 @@ eventInit = () => {
   window.addEventListener('focus', function (event) {
     paused = false;
   }, false);
-  window.addEventListener('resize', function(event){
-    C.width = window.innerWidth;
-    C.height = window.innerHeight;
-  } );
 }

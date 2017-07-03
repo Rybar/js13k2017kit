@@ -39,40 +39,34 @@ var MAX_TIME = 33; // maximum time, in millis, that the generator can use consec
 var audioCtx = null;
 
 // Oscillators
-function osc_sin(value)
-{
+function osc_sin(value){
     return Math.sin(value * 6.283184);
 }
 
-function osc_square(value)
-{
+function osc_square(value){
     if(osc_sin(value) < 0) return -1;
     return 1;
 }
 
-function osc_saw(value)
-{
+function osc_saw(value){
     return (value % 1) - 0.5;
 }
 
-function osc_tri(value)
-{
+function osc_tri(value){
     var v2 = (value % 1) * 4;
     if(v2 < 2) return v2 - 1;
     return 3 - v2;
 }
 
 // Array of oscillator functions
-var oscillators =
-[
+var oscillators = [
     osc_sin,
     osc_square,
     osc_saw,
     osc_tri
 ];
 
-function getnotefreq(n)
-{
+function getnotefreq(n){
     return 0.00390625 * Math.pow(1.059463094, n - 128);
 }
 
@@ -141,6 +135,7 @@ sonantx.AudioGenerator = function(mixBuf) {
     this.mixBuf = mixBuf;
     this.waveSize = mixBuf.length / WAVE_CHAN / 2;
 };
+
 sonantx.AudioGenerator.prototype.getAudioBuffer = function(callBack) {
     if (audioCtx === null)
         audioCtx = new AudioContext();
@@ -187,6 +182,7 @@ sonantx.SoundGenerator = function(instr, rowLen) {
     this.panFreq = Math.pow(2, instr.fx_pan_freq - 8) / this.rowLen;
     this.lfoFreq = Math.pow(2, instr.lfo_freq - 8) / this.rowLen;
 };
+
 sonantx.SoundGenerator.prototype.genSound = function(n, chnBuf, currentpos) {
     var marker = new Date();
     var c1 = 0;
@@ -272,6 +268,7 @@ sonantx.SoundGenerator.prototype.genSound = function(n, chnBuf, currentpos) {
         }
     }
 };
+
 sonantx.SoundGenerator.prototype.getAudioGenerator = function(n, callBack) {
     var bufferSize = (this.attack + this.sustain + this.release - 1) + (32 * this.rowLen);
     var self = this;
@@ -282,11 +279,13 @@ sonantx.SoundGenerator.prototype.getAudioGenerator = function(n, callBack) {
         });
     });
 };
-sonantx.SoundGenerator.prototype.createAudio = function(n, callBack) {
-    this.getAudioGenerator(n, function(ag) {
-        callBack(ag.getAudio());
-    });
-};
+
+// sonantx.SoundGenerator.prototype.createAudio = function(n, callBack) {
+//     this.getAudioGenerator(n, function(ag) {
+//         callBack(ag.getAudio());
+//     });
+// };
+
 sonantx.SoundGenerator.prototype.createAudioBuffer = function(n, callBack) {
     this.getAudioGenerator(n, function(ag) {
         ag.getAudioBuffer(callBack);
@@ -380,11 +379,11 @@ sonantx.MusicGenerator.prototype.getAudioGenerator = function(callBack) {
         recu();
     });
 };
-sonantx.MusicGenerator.prototype.createAudio = function(callBack) {
-    this.getAudioGenerator(function(ag) {
-        callBack(ag.getAudio());
-    });
-};
+// sonantx.MusicGenerator.prototype.createAudio = function(callBack) {
+//     this.getAudioGenerator(function(ag) {
+//         callBack(ag.getAudio());
+//     });
+// };
 sonantx.MusicGenerator.prototype.createAudioBuffer = function(callBack) {
     this.getAudioGenerator(function(ag) {
         ag.getAudioBuffer(callBack);

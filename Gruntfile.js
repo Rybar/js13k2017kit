@@ -20,18 +20,19 @@ module.exports = function(grunt) {
 			dist : {
 				src  : [
 					'src/js/first.js',
+					'src/js/assets.js',
 					'src/js/lib/Engine.js',
 					//'src/js/lib/statemachine.js',
 
-					//'src/js/lib/CCapture.all.min.js',
+					'src/js/lib/CCapture.all.min.js',
 					//'src/js/lib/raymarching.js',
-					'src/js/assets.js',
+					'src/js/particle.js',
 					'src/js/lib/pool.js',
 					//'src/js/lib/entity.js',
-					'src/js/particle.js',
 
-					'src/js/lib/sonantx.js',
+					//'src/js/lib/sonantx.js',
 					//'src/js/lib/stats.js',
+					'src/js/lib/player-small.js',
 					'src/js/lib/input.js',
 					'src/js/lib/text.js',
 
@@ -77,10 +78,10 @@ module.exports = function(grunt) {
 					// nameCache: 'grunt-uglify-cache.json',
 					// exceptionsFiles: [ 'domprops.json' ],
 					mangle: true
-					
-				
+
+
 				},
-				
+
 				files: {
 					'build/game.js':
 						[
