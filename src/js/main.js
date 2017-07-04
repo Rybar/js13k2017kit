@@ -8,8 +8,12 @@ init = function(){
   moveX = 0;
   speedFactor = .6;
   songTrigger = false;
-  state = 'game';
-  demostate = 0,
+  state = 'menu';
+  demostate = 0;
+  audioCtx = new AudioContext;
+
+  //console.log( getCharacter('A') );
+
 
 
 
@@ -17,10 +21,8 @@ init = function(){
 
   sounds = {};
 
-  //stats = new Stats();
-  //document.body.appendChild( stats.dom );
-
-  starColors=[15,16,17,18,19,20,21];
+  stats = new Stats();
+  document.body.appendChild( stats.dom );
 
   bulletPool.init();
 
@@ -45,19 +47,25 @@ stopCapture = (e) => {
 }
 
 loop = () => {
-//  stats.begin();
+  stats.begin();
 
   //game timer
   let now = new Date().getTime();
   dt = Math.min(1, (now - last) / 1000);
   t += dt;
 
+
+
   //draw current state to buffer
   states[state].render();
 
   //update
   states[state].step(dt);
+
   last = now;
+
+
+
 
   //draw buffer to screen
   render();
@@ -65,33 +73,22 @@ loop = () => {
   //GIF capture
   //capturer.capture(C);
 
-  //stats.end();
+  stats.end();
   requestAnimationFrame(loop);
 }
 
 soundInit = () => {
 
   sounds = {};
-  // if(audioCtx){audioCtx.close()};
-  // window.AudioContext = window.AudioContext || window.webkitAudioContext;
-  // if(!audioCtx) audioCtx = new AudioContext;
-  //
-  // var musicplayer = new CPlayer();
-  // musicplayer.init(assets.songdemo);
-  // var done = false;
-  // songWave = setInterval(function () {
-  //   if (done) {
-  //    return musicplayer.createWave();
-  //   }
-  //   done = musicplayer.generate() >= 1;
-  // });
+  //if(audioCtx){audioCtx.close()};
+  window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  if(!audioCtx) audioCtx = new AudioContext;
 
 
-  //
-  // let soundGen = new sonantx.MusicGenerator(assets.song);
-  // soundGen.createAudioBuffer(function(buffer) {
-  //   sounds.song = buffer;
-  // });
+  let soundGen = new sonantx.SoundGenerator(assets.laser);
+  soundGen.createAudioBuffer(147, function(buffer) {
+    sounds.laser = buffer;
+  });
 
 
 

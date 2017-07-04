@@ -15,7 +15,7 @@ states.menu = {
 
       fr(0,0,64,64,2);
 
-      Txt.text({
+      text({
               x: 128,
             y: 40 + Math.sin(t*2.5)*15,
               text: 'MENU',
@@ -29,6 +29,19 @@ states.menu = {
               color: 21,
           });
 
+      text({
+              x: 8,
+              y: 240,
+              text: "PRESS P TO CONTINUE",
+              hspacing: 2,
+              vspacing: 2,
+              halign: 'left',
+              valign: 'top',
+              scale: 1,
+              snap: 1,
+              render: 1,
+              color: 21,
+          });
         //draw stuff here.
 
     },

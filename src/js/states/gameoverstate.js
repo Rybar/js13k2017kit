@@ -14,7 +14,7 @@ states.gameover = {
 
       fr(0,0,64,64,2);
 
-      Txt.text({
+      text({
               x: 128,
             y: 40 + Math.sin(t*2.5)*15,
               text: 'GAME\nOVER',

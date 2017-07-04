@@ -11,7 +11,7 @@ states.game = {
       songTrigger = true
     }
     if(songTrigger){
-      //  playSound(sounds.song, 1, 1, 0);
+      playSound(sounds.laser, 1, 1, 0);
       songTrigger = false;
       incrementState();
     }
@@ -124,16 +124,14 @@ function incrementState(){
 function renderColorNumbers(){
 
   for(var i = 0; i < 32; i++){
-    Txt.text({
+    textLine({
       x: i < 16 ? ( 3+16*i ) : ( 3 + 16* (i-16) ) ,
       y: i < 16 ? 8 : 8 + 16,
       text: i.toString(),
       scale: 1,
       snap: 1,
       hspacing: 1,
-      vspacing: 2,
       halign: 'left',
-      valign: 'bottom',
       render: 1,
       color: i,
     })
@@ -153,10 +151,10 @@ function renderDrawingAPI(){
 function renderInstructions(){
 
 
-  fr(5,243,256,6,0);
-  Txt.text({
+  fr(0,243,256,6,0);
+  textLine({
     x: 5,
-    y: 249,
+    y: 242,
     text: "THINGY "+ demostate + ": PRESS Z TO SEE NEXT THINGY",
     scale: 1,
     snap: 1,

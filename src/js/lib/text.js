@@ -1,6 +1,5 @@
 
-	Txt = {
-		textLine(opt) {
+		function textLine(opt) {
 
 			var textLength = opt.text.length,
 				size = 5;
@@ -34,10 +33,10 @@
 					}
 				}
 			}
-		},
+		}
 
 
-		text(opt) {
+		function text(opt) {
 			var size = 5,
 				letterSize = size * opt.scale,
 				lines = opt.text.split('\n'),
@@ -123,4 +122,3 @@
 				height: textHeight
 			}
 		}
-	};
