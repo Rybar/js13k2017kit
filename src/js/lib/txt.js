@@ -6,8 +6,6 @@ function textLine(opt) {
 
 	for (var i = 0; i < textLength; i++) {
 
-		//bitmap data is retrieved here. currently stored as a 2D array per character.
-		//var letter = assets.letters[( opt.text.charAt(i) )] || assets.letters['unknown'];
 		var letter = [];
 		letter = getCharacter( opt.text.charAt(i) );
 		//console.log(letter);
@@ -15,8 +13,8 @@ function textLine(opt) {
 
 		for (var y = 0; y < size; y++) {
 			for (var x = 0; x < size; x++) {
-				//console.log(letter[y][x]);
-				if (letter[y][x] == 1) {
+				//if (letter[y][x] == 1) {
+				if (letter[y*size+x] == 1){
 					if(opt.scale == 1){
 						pset(
 							opt.x + ( x * opt.scale ) + ( ( size * opt.scale ) + opt.hspacing ) * i,
@@ -33,12 +31,12 @@ function textLine(opt) {
 						opt.scale,
 						opt.color);
 					}
-						//console.log(opt.color);
-				}
-			}
-		}
-	}
-}
+
+				} //end draw routine
+			}  //end x loop
+		}  //end y loop
+	}  //end text loop
+}  //end textLine()
 
 function text(opt) {
 	var size = 5,
@@ -104,7 +102,6 @@ function text(opt) {
 			}
 
 			textLine({
-				ctx: opt.ctx,
 				x: x,
 				y: y,
 				text: line,
@@ -129,10 +126,20 @@ function text(opt) {
 
 function getCharacter(char){
 	var charArray = [];
-	bin = assets.font.bin;
+	bin = assets.font.bigString;
 	index = assets.font.string.indexOf(char);
-	for(var i = 0; i < 5; i++){
-		charArray.push( bin[i][0].substring(index * 5, index*5+5).split('') );
-	}
-	return charArray;
+	return bin.substring(index * 25, index*25+25).split('') ;
+	//return charArray;
 }
+
+// function flattenArray(){
+// 	var bigString = "";
+// 	bin = assets.font.bin;
+// 	for(var i = 0; i < assets.font.string.length; i++){
+// 		for(var j = 0; j < 5; j++){
+// 			bigString += bin[j][0].substring(i * 5, i*5+5);
+// 		}
+// 	}
+// 	console.log(bigString);
+// 	return bigString;
+// }

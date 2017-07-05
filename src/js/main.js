@@ -12,7 +12,10 @@ init = function(){
   demostate = 0;
   audioCtx = new AudioContext;
 
-  //console.log( getCharacter('A') );
+  console.log( getCharacter('A') );
+
+  //console.log( assets.font.string.length );
+  //console.log( flattenArray() );
 
 
 
