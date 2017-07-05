@@ -108,6 +108,7 @@ function text(opt) {
 				hspacing: opt.hspacing || 0,
 				scale: opt.scale || 1,
 				color: opt.color
+				
 			});
 		}
 	}
@@ -126,7 +127,7 @@ function text(opt) {
 
 function getCharacter(char){
 	var charArray = [];
-	bin = assets.font.bigString;
+	var bin = assets.font.bigString;
 	index = assets.font.string.indexOf(char);
 	return bin.substring(index * 25, index*25+25).split('') ;
 	//return charArray;
@@ -143,3 +144,29 @@ function getCharacter(char){
 // 	console.log(bigString);
 // 	return bigString;
 // }
+
+function binToAscii(string){
+	var bin = assets.font.bigString;
+	var ascii = "";
+	
+	for (var i = 0; i < bin.length; i += 7) {
+		
+		ascii += String.fromCharCode( parseInt( bin.substring(i*7, i*7+7), 2 ) );
+		
+	}
+	return ascii;
+}
+
+function asciiToBin(string){
+	var ascii = assets.asciiEncoded;
+	var binString = "";
+	
+	for (var i = 0; i < ascii.length; i++){
+		
+		binString += ( ascii.charCodeAt(i) >>> 0).toString(2).slice(-7);
+		
+	}
+	return binString;
+}
+
+
