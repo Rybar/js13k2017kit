@@ -54,18 +54,18 @@ player = {
     }
 
     //world wrap for player
-    if(player.x > 256){
+    if(player.x > WIDTH){
       player.x = 0;
     }
     if(player.x < 0){
-      player.x = 256;
+      player.x = WIDTH;
     }
-    if(player.y > 256){
+    if(player.y > HEIGHT){
       player.y = 0;
     }
     if(player.y < 0){
       state = 'gameover';
-      player.y = 256;
+      player.y = HEIGHT;
     }
     //end world wrap for player
 

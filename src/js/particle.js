@@ -41,6 +41,14 @@ function Particle() {
         if(this.y < 0){
           this.dead = true;
         }
+        if(this.x >= 0 && this.x <= WIDTH && this.y >=0 && this.y <= 256){  //is it on screen?
+          if(ram[0x40000 + ( (this.y|0) * WIDTH + (this.x|0) )] > 0) {  //is it overlapping something drawn into the collision buffer?
+
+            this.dead = true;
+            drawExplode(this.x, this.y);
+          }
+        }
+
     }
     return false;
   }

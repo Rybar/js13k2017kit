@@ -1,11 +1,14 @@
 //--this gets wrapped in a closure, so no namespace object, compresses better.
-
+const WIDTH =     512;
+const HEIGHT =    256;
 var
 C =               document.getElementById('canvas');
 ctx =             C.getContext('2d'),
 
+
+
 renderTarget =    0x00000,
-renderSource =    0x10000,
+renderSource =    0x20000,
 
 //Richard Fhager's DB32 Palette http://http://pixeljoint.com/forum/forum_posts.asp?TID=16247
 //ofcourse you can change this to whatever you like, up to 256 colors.
@@ -25,23 +28,24 @@ pal =             [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23
 ctx.imageSmoothingEnabled = false;
 ctx.mozImageSmoothingEnabled = false;
 
-C.width = C.height = 256;
-var imageData =       ctx.getImageData(0, 0, 256, 256),
+C.width = WIDTH;
+C.height = HEIGHT;
+var imageData =       ctx.getImageData(0, 0, 512, 256),
 buf =             new ArrayBuffer(imageData.data.length),
 buf8 =            new Uint8Array(buf),
 data =            new Uint32Array(buf),
-ram =             new Uint8ClampedArray(0x80000);
+ram =             new Uint8ClampedArray(0x100000);
 
 //--------------graphics functions----------------
       function clear(color){
-        ram.fill(color, renderTarget, renderTarget + 0x10000);
+        ram.fill(color, renderTarget, renderTarget + 0x20000);
       }
 
       function pset(x, y, color) { //from colors array, 0-31
-        x = x|0; y = y|0;
+        x = x|0; y = y|0; color = color|0;
 
-        if (x > -1 && x < 256 && y > -1 && y < 256) {
-          ram[renderTarget + (y * 256 + x)] = color;
+        if (x > -1 && x < WIDTH && y > -1 && y < HEIGHT) {
+          ram[renderTarget + (y * WIDTH + x)] = color;
         }
       }
 
@@ -272,39 +276,39 @@ ram =             new Uint8ClampedArray(0x80000);
 
           for(var j = 0; j < sw; j++){
 
-            if(y+i < 255 && x+j < 255 && y+i > -1 && x+j > -1){
+            if(y+i < HEIGHT && x+j < WIDTH && y+i > -1 && x+j > -1){
               if(flipx & flipy){
 
-                if(ram[(renderSource + ( ( sy + (sh-i) )*256+sx+(sw-j)))] > 0) {
+                if(ram[(renderSource + ( ( sy + (sh-i) )*WIDTH+sx+(sw-j)))] > 0) {
 
-                  ram[ (renderTarget + ((y+i)*256+x+j)) ] = pal[ ram[(renderSource + ((sy+(sh-i))*256+sx+(sw-j)))] ];
+                  ram[ (renderTarget + ((y+i)*WIDTH+x+j)) ] = pal[ ram[(renderSource + ((sy+(sh-i))*WIDTH+sx+(sw-j)))] ];
 
                 }
 
               }
               else if(flipy && !flipx){
 
-                if(ram[(renderSource + ( ( sy + (sh-i) )*256+sx+j))] > 0) {
+                if(ram[(renderSource + ( ( sy + (sh-i) )*WIDTH+sx+j))] > 0) {
 
-                  ram[ (renderTarget + ((y+i)*256+x+j)) ] = ram[(renderSource + ((sy+(sh-i))*256+sx+j))];
+                  ram[ (renderTarget + ((y+i)*WIDTH+x+j)) ] = ram[(renderSource + ((sy+(sh-i))*WIDTH+sx+j))];
 
                 }
 
               }
               else if(flipx && !flipy){
 
-                if(ram[(renderSource + ((sy+i)*256+sx+(sw-j)))] > 0) {
+                if(ram[(renderSource + ((sy+i)*WIDTH+sx+(sw-j)))] > 0) {
 
-                  ram[ (renderTarget + ((y+i)*256+x+j)) ] = ram[(renderSource + ((sy+i)*256+sx+(sw-j)))];
+                  ram[ (renderTarget + ((y+i)*WIDTH+x+j)) ] = ram[(renderSource + ((sy+i)*WIDTH+sx+(sw-j)))];
 
                 }
 
               }
               else if(!flipx && !flipy){
 
-                if(ram[(renderSource + ((sy+i)*256+sx+j))] > 0) {
+                if(ram[(renderSource + ((sy+i)*WIDTH+sx+j))] > 0) {
 
-                  ram[ (renderTarget + ((y+i)*256+x+j)) ] = pal[ ram[(renderSource + ((sy+i)*256+sx+j))] ];
+                  ram[ (renderTarget + ((y+i)*WIDTH+x+j)) ] = pal[ ram[(renderSource + ((sy+i)*WIDTH+sx+j))] ];
 
                 }
 
@@ -325,9 +329,9 @@ ram =             new Uint8ClampedArray(0x80000);
             px = (j*xratio)|0;
             py = (i*yratio)|0;
 
-            if(y+i < 255 && x+j < 255 && y+i > -1 && x+j > -1) {
-              if (ram[(renderSource + ((sy + py) * 256 + sx + px))] > 0) {
-                ram[(renderTarget + ((y + i) * 256 + x + j))] = ram[(renderSource + ((sy + py) * 256 + sx + px))]
+            if(y+i < HEIGHT && x+j < WIDTH && y+i > -1 && x+j > -1) {
+              if (ram[(renderSource + ((sy + py) * WIDTH + sx + px))] > 0) {
+                ram[(renderTarget + ((y + i) * WIDTH + x + j))] = ram[(renderSource + ((sy + py) * WIDTH + sx + px))]
               }
             }
 
@@ -370,8 +374,8 @@ ram =             new Uint8ClampedArray(0x80000);
             let drawY = (y + destCenterY)|0;
 
            if(u >= 0 && v >= 0 && u < sw && v < sh){
-              if( ram[ (renderSource + (v * 256 + u)) ] > 0) {
-                ram[(renderTarget + (drawY * 256 + drawX)) ] = ram[(renderSource + ( v * 256 + u )) ]
+              if( ram[ (renderSource + (v * WIDTH + u)) ] > 0) {
+                ram[(renderTarget + (drawY * WIDTH + drawX)) ] = ram[(renderSource + ( v * WIDTH + u )) ]
               }
             }
 
@@ -450,7 +454,7 @@ ram =             new Uint8ClampedArray(0x80000);
 
     function render() {
 
-      var i = 0x10000;  // display is first 0x10000 bytes of ram
+      var i = 0x20000;  // display is first 0x20000 bytes of ram
 
       while (i--) {
         /*
