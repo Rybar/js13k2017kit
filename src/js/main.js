@@ -1,3 +1,5 @@
+//-----main.js---------------
+
 states = {};
 
 init = () => {
@@ -87,3 +89,5 @@ loop = () => {
     //stats.end();
     requestAnimationFrame(loop);
 }
+
+//----- END main.js---------------
