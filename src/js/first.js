@@ -1,2 +1,1 @@
-var GAME = (function(){
- var states = {};
+(function GAME(){

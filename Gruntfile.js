@@ -19,29 +19,20 @@ module.exports = function(grunt) {
 		concat : {
 			dist : {
 				src  : [
+					//'src/js/lib/stats.js',
+
 					'src/js/first.js',
-					'src/js/assets.js',
+					// 'src/js/assets.js',
 					'src/js/lib/Engine.js',
 					'src/js/main.js',
 					'src/js/states/gameoverstate.js',
 					'src/js/states/menustate.js',
 					'src/js/states/gamestate.js',
 
-
 					//'src/js/lib/CCapture.all.min.js',
-					'src/js/particle.js',
-					'src/js/lib/pool.js',
-					//'src/js/lib/entity.js',
 
-					'src/js/lib/sonantx.js',
-					'src/js/lib/stats.js',
-					//'src/js/lib/player-small.js',
 					'src/js/lib/input.js',
 					'src/js/lib/txt.js',
-
-
-
-					'src/js/player.js',
 
 					'src/js/last.js'
 				],
