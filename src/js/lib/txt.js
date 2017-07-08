@@ -1,35 +1,44 @@
+//o is an array of options with the following structure:
+/*
+0: text
+1: x
+2: y
+3: hspacing
+4: vspacing
+5: halign
+6: valign
+7: scale
+8: color
+*/
+function textLine(o) {
 
-function textLine(opt) {
-
-	var textLength = opt.text.length,
+	var textLength = o[0].length,
 		size = 5;
 
 	for (var i = 0; i < textLength; i++) {
 
 		var letter = [];
-		letter = getCharacter( opt.text.charAt(i) );
-		//console.log(letter);
-		//console.log(assets.letters[ opt.text.charAt(i)]);
+		letter = getCharacter( o[0].charAt(i) );
 
 		for (var y = 0; y < size; y++) {
 			for (var x = 0; x < size; x++) {
 				//if (letter[y][x] == 1) {
 				if (letter[y*size+x] == 1){
-					if(opt.scale == 1){
+					if(o[4] == 1){
 						pset(
-							opt.x + ( x * opt.scale ) + ( ( size * opt.scale ) + opt.hspacing ) * i,
-							opt.y + (y * opt.scale),
-							opt.color
+							o[1] + ( x * o[4] ) + ( ( size * o[4] ) + o[3] ) * i,
+							o[2] + (y * o[4]),
+							o[5]
 						);
 					}
 
 					else {
-						fr(
-						opt.x + ( x * opt.scale ) + ( ( size * opt.scale ) + opt.hspacing ) * i,
-						opt.y + (y * opt.scale),
-						opt.scale,
-						opt.scale,
-						opt.color);
+						fillRect(
+						o[1] + ( x * o[4] ) + ( ( size * o[4] ) + o[3] ) * i,
+						o[2] + (y * o[4]),
+						o[4],
+						o[4],
+						o[5]);
 					}
 
 				} //end draw routine
@@ -38,80 +47,72 @@ function textLine(opt) {
 	}  //end text loop
 }  //end textLine()
 
-function text(opt) {
+function text(o) {
 	var size = 5,
-	letterSize = size * opt.scale,
-	lines = opt.text.split('\n'),
+	letterSize = size * o[7],
+	lines = o[0].split('\n'),
 	linesCopy = lines.slice(0),
 	lineCount = lines.length,
 	longestLine = linesCopy.sort(function (a, b) {
 		return b.length - a.length;
 	})[0],
-	textWidth = ( longestLine.length * letterSize ) + ( ( longestLine.length - 1 ) * opt.hspacing ),
-	textHeight = ( lineCount * letterSize ) + ( ( lineCount - 1 ) * opt.vspacing );
+	textWidth = ( longestLine.length * letterSize ) + ( ( longestLine.length - 1 ) * o[3] ),
+	textHeight = ( lineCount * letterSize ) + ( ( lineCount - 1 ) * o[4] );
 
-	if(!opt.halign)opt.halign = 'left';
-	if(!opt.valign)opt.valign = 'bottom';
+	if(!o[5])o[5] = 'left';
+	if(!o[6])o[6] = 'bottom';
 
-	var sx = opt.x,
-		sy = opt.y,
-		ex = opt.x + textWidth,
-		ey = opt.y + textHeight;
+	var sx = o[1],
+		sy = o[2],
+		ex = o[1] + textWidth,
+		ey = o[2] + textHeight;
 
-	if (opt.halign == 'center') {
-		sx = opt.x - textWidth / 2;
-		ex = opt.x + textWidth / 2;
-	} else if (opt.halign == 'right') {
-		sx = opt.x - textWidth;
-		ex = opt.x;
+	if (o[5] == 'center') {
+		sx = o[1] - textWidth / 2;
+		ex = o[1] + textWidth / 2;
+	} else if (o[5] == 'right') {
+		sx = o[1] - textWidth;
+		ex = o[1];
 	}
 
-	if (opt.valign == 'center') {
-		sy = opt.y - textHeight / 2;
-		ey = opt.y + textHeight / 2;
-	} else if (opt.valign == 'bottom') {
-		sy = opt.y - textHeight;
-		ey = opt.y;
+	if (o[6] == 'center') {
+		sy = o[2] - textHeight / 2;
+		ey = o[2] + textHeight / 2;
+	} else if (o[6] == 'bottom') {
+		sy = o[2] - textHeight;
+		ey = o[2];
 	}
 
 	var cx = sx + textWidth / 2,
 		cy = sy + textHeight / 2;
 
-	if (opt.render) {
 		for (var i = 0; i < lineCount; i++) {
 			var line = lines[i],
-				lineWidth = ( line.length * letterSize ) + ( ( line.length - 1 ) * opt.hspacing ),
-				x = opt.x,
-				y = opt.y + ( letterSize + opt.vspacing ) * i;
+				lineWidth = ( line.length * letterSize ) + ( ( line.length - 1 ) * o[3] ),
+				x = o[1],
+				y = o[2] + ( letterSize + o[4] ) * i;
 
-			if (opt.halign == 'center') {
-				x = opt.x - lineWidth / 2;
-			} else if (opt.halign == 'right') {
-				x = opt.x - lineWidth;
+			if (o[5] == 'center') {
+				x = o[1] - lineWidth / 2;
+			} else if (o[5] == 'right') {
+				x = o[1] - lineWidth;
 			}
 
-			if (opt.valign == 'center') {
+			if (o[6] == 'center') {
 				y = y - textHeight / 2;
-			} else if (opt.valign == 'bottom') {
+			} else if (o[6] == 'bottom') {
 				y = y - textHeight;
 			}
 
-			if (opt.snap) {
-				x = Math.floor(x);
-				y = Math.floor(y);
-			}
-
-			textLine({
-				x: x,
-				y: y,
-				text: line,
-				hspacing: opt.hspacing || 0,
-				scale: opt.scale || 1,
-				color: opt.color
-
-			});
+			textLine([
+				line,
+				x,
+				y,
+				o[3] || 0,
+				o[7] || 1,
+				o[8]
+			]);
 		}
-	}
 
 	return {
 		sx: sx,
@@ -129,24 +130,3 @@ function getCharacter(char){
 	index = fontString.indexOf(char);
 	return fontBitmap.substring(index * 25, index*25+25).split('') ;
 }
-
-// function flattenArray(){
-// 	var bigString = "";
-// 	bin = assets.font.bin;
-// 	for(var i = 0; i < assets.font.string.length; i++){
-// 		for(var j = 0; j < 5; j++){
-// 			bigString += bin[j][0].substring(i * 5, i*5+5);
-// 		}
-// 	}
-// 	console.log(bigString);
-// 	return bigString;
-// }
-
-// function binToAscii(b,a,i){
-// 	a="";
-// 	for(i=0;i<b.length;i+=7)a+=String.fromCharCode(parseInt(b.substr(i,7),2));
-// 	return a
-// 	}
-
-
-//function asciiToBin(s,b,i){b="";for(i in s)b+=(1e7+s.charCodeAt(i).toString(2)).slice(-7);return b}

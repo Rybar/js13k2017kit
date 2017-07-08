@@ -1,1 +1,1 @@
-(function GAME(){
+(function(){

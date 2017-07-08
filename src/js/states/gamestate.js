@@ -20,7 +20,7 @@ states.game = {
 
     renderTarget = 0;
 
-    fr(0,0,16,16,17);
+    fillRect(0,0,16,16,17);
     rect(400,16,16,16);
     fillCircle(32,32,8,21);
     circle(64,32,8,21);
@@ -29,19 +29,19 @@ states.game = {
     fillTriangle(32,0,64,64,128,128,21);
     spr(0,0,16,16);
     sspr(0,0,16,16,0,0,16,16);
-    text({
-            x: 256,
-            y: 20,
-            text: "512X256 DISPLAY  DB32 PALETTE",
-            hspacing: 2,
-            vspacing: 2,
-            halign: 'center',
-            valign: 'top',
-            scale: 1,
-            snap: 1,
-            render: 1,
-            color: 21,
-        });
+    renderSource = 0x0;
+    rspr(0,128,128,256, 400,128, 1.5, 45)
+    text([
+            "JS13K BOILERPLATE",
+            256,
+            20,
+            2,
+            2,
+            'center',
+            'top',
+            1,
+            21,
+        ]);
 
 
   },

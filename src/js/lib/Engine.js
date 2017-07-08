@@ -1,11 +1,9 @@
-//--this gets wrapped in a closure, so no namespace object, compresses better.
 const WIDTH =     512;
 const HEIGHT =    256;
+const PAGES =     8;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
 var
 C =               document.getElementById('canvas');
 ctx =             C.getContext('2d'),
-
-
 
 renderTarget =    0x00000,
 renderSource =    0x20000,
@@ -14,10 +12,10 @@ renderSource =    0x20000,
 //ofcourse you can change this to whatever you like, up to 256 colors.
 //one GOTCHA: colors are stored 0xAABBGGRR, so you'll have to flop the values from your typical hex colors.
 
-colors =          [0xff000000, 0xff342022, 0xff3c2845, 0xff313966, 0xff3b568f, 0xff2671df, 0xff66a0d9, 0xff9ac3ee, 0xff36f2fb,
-                   0xff50e599, 0xff30be6a, 0xff6e9437, 0xff2f694b, 0xff244b52, 0xff393c32, 0xff743f3f, 0xff826030, 0xffe16e5b,
-                   0xffff9b63, 0xffe4cd5f, 0xfffcdbcb, 0xffffffff, 0xffb7ad9b, 0xff877e84, 0xff6a6a69, 0xff525659, 0xff8a4276,
-                   0xff3232ac, 0xff6357d9, 0xffba7bd7, 0xff4a978f, 0xff306f8a],
+colors =          [0xff000000, 0xff342022, 0xff3c2845, 0xff313966, 0xff3b568f, 0xff2671df, 0xff66a0d9, 0xff9ac3ee,
+                   0xff36f2fb, 0xff50e599, 0xff30be6a, 0xff6e9437, 0xff2f694b, 0xff244b52, 0xff393c32, 0xff743f3f,
+                   0xff826030, 0xffe16e5b, 0xffff9b63, 0xffe4cd5f, 0xfffcdbcb, 0xffffffff, 0xffb7ad9b, 0xff877e84,
+                   0xff6a6a69, 0xff525659, 0xff8a4276, 0xff3232ac, 0xff6357d9, 0xffba7bd7, 0xff4a978f, 0xff306f8a],
 
 //default palette index
 palDefault =      [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
@@ -30,21 +28,22 @@ ctx.mozImageSmoothingEnabled = false;
 
 C.width = WIDTH;
 C.height = HEIGHT;
-var imageData =       ctx.getImageData(0, 0, 512, 256),
+var imageData =       ctx.getImageData(0, 0, WIDTH, HEIGHT),
 buf =             new ArrayBuffer(imageData.data.length),
 buf8 =            new Uint8Array(buf),
 data =            new Uint32Array(buf),
-ram =             new Uint8ClampedArray(0x100000);
+ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
 
 //--------------graphics functions----------------
+
   function clear(color){
     ram.fill(color, renderTarget, renderTarget + 0x20000);
   }
 
-  function pset(x, y, color) { //from colors array, 0-31
+  function pset(x, y, color) { //an index from colors[], 0-31
     x = x|0; y = y|0; color = color|0;
 
-    if (x > -1 && x < WIDTH && y > -1 && y < HEIGHT) {
+    if (x > 0 && x < WIDTH && y > 0 && y < HEIGHT) {
       ram[renderTarget + (y * WIDTH + x)] = color;
     }
   }
@@ -151,8 +150,7 @@ ram =             new Uint8ClampedArray(0x100000);
     line(x1, y1, x1, y2, color);
   }
 
-  function fr(x, y, w, h, color) {  //draw a filled rectangle
-
+  function fillRect(x, y, w, h, color) {
     x1 = x|0;
     y1 = y|0;
     x2 = (x+w)|0;
@@ -400,57 +398,10 @@ ram =             new Uint8ClampedArray(0x100000);
       for (var j = 0, col = nCol / 2; j < col; ++j) {
         x = 2 * j * w + (i % 2 ? 0 : w);
         y = i * h;
-        fr(x, y, w-1, h-1, color);
+        fillRect(x, y, w-1, h-1, color);
       }
     }
   }
-
-// util: {
-//
-//   toPolarScreen(p){
-//     let degrees = (360/256) * p.x * 0.0174533;
-//     let radius = p.y / 2;
-//     return util.polarToPoint(degrees, radius);
-//   },
-//
-//   norm(value, min, max){
-//     return (value - min) / (max - min);
-//   },
-//
-//   dist(x0, y0, x1, y1) {
-//     if(arguments.length === 2) {
-//       return this.dist(x0.x, x0.y, y0.x, y0.y);
-//     }
-//     var dx = x1 - x0,
-//     dy = y1 - y0;
-//     return Math.sqrt(dx * dx + dy * dy);
-//   },
-//
-//
-//   polarToPoint(angle, radius) {
-//     return {
-//       x: Math.cos(angle) * radius,
-//       y: Math.sin(angle) * radius
-//     };
-//   },
-//
-//   pointToPolar(p) {
-//     return {
-//       angle: Math.atan2(p.y, p.x),
-//       radius: this.magnitude(p)
-//     };
-//   },
-//
-//   magnitude(p) {
-//     return this.dist(0, 0, p.x, p.y);
-//   },
-//
-//   scale(p) {
-//
-//   }
-//
-//
-// },
 
 function render() {
 
@@ -470,23 +421,3 @@ function render() {
   ctx.putImageData(imageData, 0, 0);
 
 }
-
-// playSound = function(buffer, playbackRate, pan, loop) {
-//
-//   var source = audioCtx.createBufferSource();
-//   var gainNode = audioCtx.createGain();
-//   var panNode = audioCtx.createStereoPanner();
-//
-//   source.buffer = buffer;
-//   source.connect(panNode);
-//   panNode.connect(gainNode);
-//   gainNode.connect(audioCtx.destination);
-//
-//   //gainNode.connect(audioCtx.destination);
-//   source.playbackRate.value = playbackRate;
-//   source.loop = loop;
-//   gainNode.gain.value = 1;
-//   panNode.pan.value = pan;
-//   source.start();
-//   return {volume: gainNode, sound: source};
-// }
