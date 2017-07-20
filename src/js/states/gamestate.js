@@ -32,6 +32,8 @@ states.game = {
     spr(0,0,16,16);
     sspr(0,0,16,16,0,0,16,16);
     renderSource = 0x0;
+    fillRect(256,0,256,256,1);
+    //checker(256, 0, 256,256, 8,8, 2);
     rspr(0,128,128,256, 400,128, 1.5, 45)
     text([
             "JS13K BOILERPLATE",

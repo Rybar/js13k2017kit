@@ -13,7 +13,12 @@ init = () => {
   songTrigger = false;
   state = 'menu';
   demostate = 0;
-  audioCtx = new AudioContext;
+  //audioCtx = new AudioContext;
+
+  AC = new AudioContext();
+  //stat = document.getElementById('status');
+  //stat.innerHTML = "blargh"
+
 
   fontString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_!@.'\"?/<()";
 
@@ -26,8 +31,6 @@ init = () => {
   "1011110000101110011101000110001100010111000000000000000000000111110010000100001000000000100111111000110111101011011101010111110101011111010100000"+
   "000000000000000000100001100001000100000000000011011010011001000000000000111010001001100000000100000010001000100010001000000010001000100000100000100001000100001000010000010"
 
-  sounds = {};
-
   //stats = new Stats();
   //document.body.appendChild( stats.dom );
 
@@ -36,7 +39,10 @@ init = () => {
   //capturer.start();
 
   //start the game loop
-  loop();
+  SP = AC.createScriptProcessor(1024, 0, 1);
+  SP.connect(AC.destination);
+  SP.onaudioprocess = loop;
+  //loop();
 
 }
 
@@ -64,7 +70,7 @@ window.addEventListener('focus', function (event) {
   paused = false;
 }, false);
 
-loop = () => {
+loop = e => {
     //stats.begin();
 
     //game timer
@@ -82,6 +88,9 @@ loop = () => {
 
     //draw buffer to screen
     render();
+
+    //render audio
+    renderAudio(e);
 
     //GIF capture
     //capturer.capture(C);

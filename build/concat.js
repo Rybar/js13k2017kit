@@ -1,5 +1,7 @@
 (function(){
 
+//--------------Engine.js-------------------
+
 const WIDTH =     512;
 const HEIGHT =    256;
 const PAGES =     8;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
@@ -384,26 +386,24 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
    } //end outer y loop
   }
 
-  function checker(w, h, nRow, nCol, color) {
-    //var w = 256;
-    //var h = 256;
-    var x = 0;
-    var y = 0;
-
-    nRow = nRow || 8;    // default number of rows
-    nCol = nCol || 8;    // default number of columns
-
-    w /= nCol;            // width of a block
-    h /= nRow;            // height of a block
-
-    for (var i = 0; i < nRow; ++i) {
-      for (var j = 0, col = nCol / 2; j < col; ++j) {
-        x = 2 * j * w + (i % 2 ? 0 : w);
-        y = i * h;
-        fillRect(x, y, w-1, h-1, color);
-      }
-    }
-  }
+  // function checker(x, y, w, h, nRow, nCol, color) {
+  //   //var w = 256;
+  //   //var h = 256;
+  //
+  //   nRow = nRow || 8;    // default number of rows
+  //   nCol = nCol || 8;    // default number of columns
+  //
+  //   w /= nCol;            // width of a block
+  //   h /= nRow;            // height of a block
+  //
+  //   for (var i = 0; i < nRow; ++i) {
+  //     for (var j = 0, col = nCol / 2; j < col; ++j) {
+  //       let bx = x + (2 * j * w + (i % 2 ? 0 : w) );
+  //       let by = i * h;
+  //       fillRect(bx, by, w-1, h-1, color);
+  //     }
+  //   }
+  // }
 
 function render() {
 
@@ -424,6 +424,102 @@ function render() {
 
 }
 
+//--------END Engine.js-------------------
+
+//TODO: decouple game timer and sound timer
+time = 0;
+
+function renderAudio(e) {
+  audioData = e.outputBuffer.getChannelData(0);
+
+  inc = 1 / AC.sampleRate
+
+  samplesPerFrame = AC.sampleRate / 60;
+  //time = t;
+  for(i = 0; i < audioData.length; i++){
+    //time = t;
+    time += inc;
+    signal = 0;
+
+    beat = time * 1.3;
+    bar = beat / 4;
+    half = beat / 2;
+    pattern = bar / 2;
+    note = beat * 4;
+
+    //bassdrum
+    env = Math.pow(1 - beat % 1, 8);
+    signal += ( oscSinus(50) + oscNoise() * .1 ) * env * .3;
+
+    //hat
+    env = Math.pow(1 - beat % .5, 16);
+    signal += oscNoise() * env * .1;
+
+    //hat
+    env = Math.pow(1 - beat % .25, 16);
+    signal += oscNoise() * env * .05;
+
+    //snare
+    env = Math.pow(1 - half % 1, 10);
+    signal += oscNoise() * env * .15;
+
+    //bass
+    env = Math.pow(1- note % 1, 3);
+    f = getnotefreq( bass[note % bass.length|0]  );
+    signal += oscSquare(f) * env * .15;
+
+    //bass2
+    env = Math.pow(1 - note % .5, 3);
+    f = getnotefreq( bass[note % bass.length|0] );
+    signal += oscSquare(f) * env * .15;
+
+//    //lead
+
+      env = Math.pow(1- note % 1, .5);
+      f = getnotefreq( notes[note % notes.length|0] + 0 );
+      signal += ( oscSawtooth(f) + oscSawtooth(f*1.01) + oscSawtooth(f*1.02) ) * env * .05;
+
+
+    //lead2
+
+      env = Math.pow(1- note % 1, 1);
+      f = getnotefreq( notesb[note % notesb.length|0] );
+      signal += ( oscSawtooth(f) + oscSawtooth(f*1.005) + oscSawtooth(f*1.0006) ) * env * .05;
+
+
+
+
+  audioData[i] = signal;
+
+
+  }
+
+}
+kick = "1000100010001000";
+bass =   [-35,0,-23,0,0,-35,0,0,-23,0]
+notes =  [4,0,4,1,0,4,0,4,3,0,4,0,4,8,0,4,0,4,3,0,5,0,5,5,0,5,0,5,5,0,5,5,5,8,0,5,5,0,5,0]
+notesb = [13,1,8,6,11];
+
+
+oscSinus =
+  f => Math.sin(f * time * Math.PI * 2);
+
+oscSawtooth =
+  f => (f * time * 2 + 1) % 2 - 1;
+
+oscSquare =
+  f => 1 - (f * time * 2 & 1) * 2;
+
+oscNoise =
+  f => Math.random() * 2 - 1;
+
+function getnotefreq(n){
+    if(n == 0)return 0;
+    return 0.00390625 * Math.pow(1.059463094, n + 200); //200 magic number gets note 1 in audible range around middle C
+}
+
+//-----main.js---------------
+
 states = {};
 
 init = () => {
@@ -437,7 +533,12 @@ init = () => {
   songTrigger = false;
   state = 'menu';
   demostate = 0;
-  audioCtx = new AudioContext;
+  //audioCtx = new AudioContext;
+
+  AC = new AudioContext();
+  //stat = document.getElementById('status');
+  //stat.innerHTML = "blargh"
+
 
   fontString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_!@.'\"?/<()";
 
@@ -450,8 +551,6 @@ init = () => {
   "1011110000101110011101000110001100010111000000000000000000000111110010000100001000000000100111111000110111101011011101010111110101011111010100000"+
   "000000000000000000100001100001000100000000000011011010011001000000000000111010001001100000000100000010001000100010001000000010001000100000100000100001000100001000010000010"
 
-  sounds = {};
-
   //stats = new Stats();
   //document.body.appendChild( stats.dom );
 
@@ -460,7 +559,10 @@ init = () => {
   //capturer.start();
 
   //start the game loop
-  loop();
+  SP = AC.createScriptProcessor(1024, 0, 1);
+  SP.connect(AC.destination);
+  SP.onaudioprocess = loop;
+  //loop();
 
 }
 
@@ -488,7 +590,7 @@ window.addEventListener('focus', function (event) {
   paused = false;
 }, false);
 
-loop = () => {
+loop = e => {
     //stats.begin();
 
     //game timer
@@ -507,12 +609,19 @@ loop = () => {
     //draw buffer to screen
     render();
 
+    //render audio
+    renderAudio(e);
+
     //GIF capture
     //capturer.capture(C);
 
     //stats.end();
     requestAnimationFrame(loop);
 }
+
+//----- END main.js---------------
+
+//--------gameoverstate.js-----------
 
 states.gameover = {
 
@@ -544,6 +653,10 @@ states.gameover = {
     },
 
 };
+
+//---------END gameoverstate.js----------
+
+//--------------menustate.js---------------
 
 states.menu = {
 
@@ -597,6 +710,10 @@ states.menu = {
 
 };
 
+//-------END menustate.js-------------
+
+//---gamestate.js------------------------------
+
 states.game = {
 
 
@@ -629,6 +746,8 @@ states.game = {
     spr(0,0,16,16);
     sspr(0,0,16,16,0,0,16,16);
     renderSource = 0x0;
+    fillRect(256,0,256,256,1);
+    //checker(256, 0, 256,256, 8,8, 2);
     rspr(0,128,128,256, 400,128, 1.5, 45)
     text([
             "JS13K BOILERPLATE",
@@ -646,6 +765,8 @@ states.game = {
   },
 
 };
+
+//---END gamestate.js------------------------------
 
     Key = {
 
@@ -689,6 +810,8 @@ states.game = {
             this._released = {};
         }
     };
+
+//-----------txt.js----------------
 
 //o is an array of options with the following structure:
 /*
@@ -822,6 +945,8 @@ function getCharacter(char){
 	index = fontString.indexOf(char);
 	return fontBitmap.substring(index * 25, index*25+25).split('') ;
 }
+
+//-----------END txt.js----------------
 
 window.onload = init();
 }

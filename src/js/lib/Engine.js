@@ -1,3 +1,5 @@
+//--------------Engine.js-------------------
+
 const WIDTH =     512;
 const HEIGHT =    256;
 const PAGES =     8;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
@@ -382,26 +384,24 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
    } //end outer y loop
   }
 
-  function checker(w, h, nRow, nCol, color) {
-    //var w = 256;
-    //var h = 256;
-    var x = 0;
-    var y = 0;
-
-    nRow = nRow || 8;    // default number of rows
-    nCol = nCol || 8;    // default number of columns
-
-    w /= nCol;            // width of a block
-    h /= nRow;            // height of a block
-
-    for (var i = 0; i < nRow; ++i) {
-      for (var j = 0, col = nCol / 2; j < col; ++j) {
-        x = 2 * j * w + (i % 2 ? 0 : w);
-        y = i * h;
-        fillRect(x, y, w-1, h-1, color);
-      }
-    }
-  }
+  // function checker(x, y, w, h, nRow, nCol, color) {
+  //   //var w = 256;
+  //   //var h = 256;
+  //
+  //   nRow = nRow || 8;    // default number of rows
+  //   nCol = nCol || 8;    // default number of columns
+  //
+  //   w /= nCol;            // width of a block
+  //   h /= nRow;            // height of a block
+  //
+  //   for (var i = 0; i < nRow; ++i) {
+  //     for (var j = 0, col = nCol / 2; j < col; ++j) {
+  //       let bx = x + (2 * j * w + (i % 2 ? 0 : w) );
+  //       let by = i * h;
+  //       fillRect(bx, by, w-1, h-1, color);
+  //     }
+  //   }
+  // }
 
 function render() {
 
@@ -421,3 +421,5 @@ function render() {
   ctx.putImageData(imageData, 0, 0);
 
 }
+
+//--------END Engine.js-------------------

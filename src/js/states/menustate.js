@@ -1,3 +1,5 @@
+//--------------menustate.js---------------
+
 states.menu = {
 
   step: function(dt) {
@@ -49,3 +51,5 @@ states.menu = {
   },
 
 };
+
+//-------END menustate.js-------------

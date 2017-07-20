@@ -1,3 +1,5 @@
+//--------gameoverstate.js-----------
+
 states.gameover = {
 
     step: function(dt) {
@@ -28,3 +30,5 @@ states.gameover = {
     },
 
 };
+
+//---------END gameoverstate.js----------

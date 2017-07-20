@@ -24,6 +24,8 @@ module.exports = function(grunt) {
 					'src/js/first.js',
 					// 'src/js/assets.js',
 					'src/js/lib/Engine.js',
+					//'src/lib/sonantx.js',
+					'src/js/lib/sound.js',
 					'src/js/main.js',
 					'src/js/states/gameoverstate.js',
 					'src/js/states/menustate.js',

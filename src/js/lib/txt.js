@@ -1,3 +1,5 @@
+//-----------txt.js----------------
+
 //o is an array of options with the following structure:
 /*
 0: text
@@ -130,3 +132,5 @@ function getCharacter(char){
 	index = fontString.indexOf(char);
 	return fontBitmap.substring(index * 25, index*25+25).split('') ;
 }
+
+//-----------END txt.js----------------
