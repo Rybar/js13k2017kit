@@ -1,4 +1,6 @@
-//TODO: decouple game timer and sound timer
+//TODO: implement one-off sound effect events (shots, coins, etc)
+//TODO: implement music-synchronized visuals
+
 time = 0;
 
 function renderAudio(e) {

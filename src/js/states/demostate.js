@@ -5,17 +5,6 @@ states.demo = {
 
     player.update(dt);
 
-    //----hacky sound test
-    if(Key.justReleased(Key.z)){
-
-      songTrigger = true
-    }
-    if(songTrigger){
-      playSound(sounds.laser, 1, 1, 0);
-      songTrigger = false;
-      incrementState();
-    }
-    //---end hacky sound test
 
     bulletPool.use();
 

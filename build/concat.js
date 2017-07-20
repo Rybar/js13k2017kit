@@ -561,8 +561,8 @@ init = () => {
   //start the game loop
   SP = AC.createScriptProcessor(1024, 0, 1);
   SP.connect(AC.destination);
-  SP.onaudioprocess = loop;
-  //loop();
+  SP.onaudioprocess = renderAudio;
+  loop();
 
 }
 
@@ -601,16 +601,16 @@ loop = e => {
     //draw current state to buffer
     states[state].render();
 
+
     //update
     states[state].step(dt);
 
     last = now;
 
     //draw buffer to screen
-    render();
+    render(e);
 
     //render audio
-    renderAudio(e);
 
     //GIF capture
     //capturer.capture(C);
