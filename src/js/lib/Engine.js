@@ -1,6 +1,6 @@
 //--------------Engine.js-------------------
 
-const WIDTH =     512;
+const WIDTH =     453;
 const HEIGHT =    256;
 const PAGES =     8;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
 var

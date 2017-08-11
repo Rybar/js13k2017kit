@@ -2,7 +2,7 @@
 
 //--------------Engine.js-------------------
 
-const WIDTH =     512;
+const WIDTH =     453;
 const HEIGHT =    256;
 const PAGES =     8;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
 var
@@ -426,7 +426,9 @@ function render() {
 
 //--------END Engine.js-------------------
 
-//TODO: decouple game timer and sound timer
+//TODO: implement one-off sound effect events (shots, coins, etc)
+//TODO: implement music-synchronized visuals
+
 time = 0;
 
 function renderAudio(e) {

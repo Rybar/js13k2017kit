@@ -82,7 +82,6 @@ loop = e => {
     states[state].render();
 
 
-    //update
     states[state].step(dt);
 
     last = now;
