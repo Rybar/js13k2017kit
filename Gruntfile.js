@@ -22,11 +22,12 @@ module.exports = function(grunt) {
 					//'src/js/lib/stats.js',
 
 					'src/js/first.js',
-					// 'src/js/assets.js',
+					'src/js/lib/sonantx.js',
+					'src/js/assets.js',
 					'src/js/lib/Engine.js',
-					//'src/lib/sonantx.js',
-					'src/js/lib/sound.js',
+
 					'src/js/main.js',
+					'src/js/lib/sound.js',
 					'src/js/states/gameoverstate.js',
 					'src/js/states/menustate.js',
 					'src/js/states/gamestate.js',
@@ -67,10 +68,17 @@ module.exports = function(grunt) {
 			},
 			compressed: {
 				options: {
-					reserveDOMCache: true,
-					// nameCache: 'grunt-uglify-cache.json',
-					// exceptionsFiles: [ 'domprops.json' ],
-					mangle: true
+					//reserveDOMCache: true,
+					 nameCache: 'grunt-uglify-cache.json',
+					 mangle: {
+					 		properties: {
+									builtins: false,
+									regex: /MusicGenerator|getAudioGenerator|osc1_oct|oscSawtooth|osc1_det|osc1_detune/
+									//domprops: false,
+
+							}
+					}
+					//mangle: true
 
 
 				},

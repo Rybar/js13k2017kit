@@ -39,10 +39,11 @@ init = () => {
   //capturer.start();
 
   //start the game loop
-  SP = AC.createScriptProcessor(1024, 0, 1);
-  SP.connect(AC.destination);
-  SP.onaudioprocess = renderAudio;
-  loop();
+  // SP = AC.createScriptProcessor(1024, 0, 1);
+  // SP.connect(AC.destination);
+  // SP.onaudioprocess = renderAudio;
+   //player = new sonantx;
+   loop();
 
 }
 

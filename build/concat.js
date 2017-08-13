@@ -1,8 +1,1284 @@
 (function(){
 
+//---------SONANT-X---------
+/*
+// Sonant-X
+//
+// Copyright (c) 2014 Nicolas Vanhoren
+//
+// Sonant-X is a fork of js-sonant by Marcus Geelnard and Jake Taylor. It is
+// still published using the same license (zlib license, see below).
+//
+// Copyright (c) 2011 Marcus Geelnard
+// Copyright (c) 2008-2009 Jake Taylor
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+//
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+//
+// 3. This notice may not be removed or altered from any source
+//    distribution.
+*/
+
+var sonantx = {};
+
+var WAVE_SPS = 44100;                    // Samples per second
+var WAVE_CHAN = 2;                       // Channels
+var MAX_TIME = 33; // maximum time, in millis, that the generator can use consecutively
+
+var audioCtx = null;
+
+// Oscillators
+function osc_sin(value){
+    return Math.sin(value * 6.283184);
+}
+
+function osc_square(value){
+    if(osc_sin(value) < 0) return -1;
+    return 1;
+}
+
+function osc_saw(value){
+    return (value % 1) - 0.5;
+}
+
+function osc_tri(value){
+    var v2 = (value % 1) * 4;
+    if(v2 < 2) return v2 - 1;
+    return 3 - v2;
+}
+
+// Array of oscillator functions
+var oscillators = [
+    osc_sin,
+    osc_square,
+    osc_saw,
+    osc_tri
+];
+
+function getnotefreq(n){
+    return 0.00390625 * Math.pow(1.059463094, n - 128);
+}
+
+function genBuffer(waveSize, callBack) {
+    setTimeout(function() {
+        // Create the channel work buffer
+        var buf = new Uint8Array(waveSize * WAVE_CHAN * 2);
+        var b = buf.length - 2;
+        var iterate = function() {
+            var begin = new Date();
+            var count = 0;
+            while(b >= 0)
+            {
+                buf[b] = 0;
+                buf[b + 1] = 128;
+                b -= 2;
+                count += 1;
+                if (count % 1000 === 0 && (new Date() - begin) > MAX_TIME) {
+                    setTimeout(iterate, 0);
+                    return;
+                }
+            }
+            setTimeout(function() {callBack(buf);}, 0);
+        };
+        setTimeout(iterate, 0);
+    }, 0);
+}
+
+function applyDelay(chnBuf, waveSamples, instr, rowLen, callBack) {
+    var p1 = (instr.fx_delay_time * rowLen) >> 1;
+    var t1 = instr.fx_delay_amt / 255;
+
+    var n1 = 0;
+    var iterate = function() {
+        var beginning = new Date();
+        var count = 0;
+        while(n1 < waveSamples - p1)
+        {
+            var b1 = 4 * n1;
+            var l = 4 * (n1 + p1);
+
+            // Left channel = left + right[-p1] * t1
+            var x1 = chnBuf[l] + (chnBuf[l+1] << 8) +
+                (chnBuf[b1+2] + (chnBuf[b1+3] << 8) - 32768) * t1;
+            chnBuf[l] = x1 & 255;
+            chnBuf[l+1] = (x1 >> 8) & 255;
+
+            // Right channel = right + left[-p1] * t1
+            x1 = chnBuf[l+2] + (chnBuf[l+3] << 8) +
+                (chnBuf[b1] + (chnBuf[b1+1] << 8) - 32768) * t1;
+            chnBuf[l+2] = x1 & 255;
+            chnBuf[l+3] = (x1 >> 8) & 255;
+            ++n1;
+            count += 1;
+            if (count % 1000 === 0 && (new Date() - beginning) > MAX_TIME) {
+                setTimeout(iterate, 0);
+                return;
+            }
+        }
+        setTimeout(callBack, 0);
+    };
+    setTimeout(iterate, 0);
+}
+
+sonantx.AudioGenerator = function(mixBuf) {
+    this.mixBuf = mixBuf;
+    this.waveSize = mixBuf.length / WAVE_CHAN / 2;
+};
+
+sonantx.AudioGenerator.prototype.getAudioBuffer = function(callBack) {
+    if (audioCtx === null)
+        audioCtx = new AudioContext();
+    var mixBuf = this.mixBuf;
+    var waveSize = this.waveSize;
+
+    var waveBytes = waveSize * WAVE_CHAN * 2;
+    var buffer = audioCtx.createBuffer(WAVE_CHAN, this.waveSize, WAVE_SPS); // Create Mono Source Buffer from Raw Binary
+    var lchan = buffer.getChannelData(0);
+    var rchan = buffer.getChannelData(1);
+    var b = 0;
+    var iterate = function() {
+        var beginning = new Date();
+        var count = 0;
+        while (b < (waveBytes / 2)) {
+            var y = 4 * (mixBuf[b * 4] + (mixBuf[(b * 4) + 1] << 8) - 32768);
+            y = y < -32768 ? -32768 : (y > 32767 ? 32767 : y);
+            lchan[b] = y / 32768;
+            y = 4 * (mixBuf[(b * 4) + 2] + (mixBuf[(b * 4) + 3] << 8) - 32768);
+            y = y < -32768 ? -32768 : (y > 32767 ? 32767 : y);
+            rchan[b] = y / 32768;
+            b += 1;
+            count += 1;
+            if (count % 1000 === 0 && new Date() - beginning > MAX_TIME) {
+                setTimeout(iterate, 0);
+                return;
+            }
+        }
+        setTimeout(function() {callBack(buffer);}, 0);
+    };
+    setTimeout(iterate, 0);
+};
+
+sonantx.SoundGenerator = function(instr, rowLen) {
+    this.instr = instr;
+    this.rowLen = rowLen || 5605;
+
+    this.osc_lfo = oscillators[instr.lfo_waveform];
+    this.osc1 = oscillators[instr.osc1_waveform];
+    this.osc2 = oscillators[instr.osc2_waveform];
+    this.attack = instr.env_attack;
+    this.sustain = instr.env_sustain;
+    this.release = instr.env_release;
+    this.panFreq = Math.pow(2, instr.fx_pan_freq - 8) / this.rowLen;
+    this.lfoFreq = Math.pow(2, instr.lfo_freq - 8) / this.rowLen;
+};
+
+sonantx.SoundGenerator.prototype.genSound = function(n, chnBuf, currentpos) {
+    var marker = new Date();
+    var c1 = 0;
+    var c2 = 0;
+
+    // Precalculate frequencues
+    var o1t = getnotefreq(n + (this.instr.osc1_oct - 8) * 12 + this.instr.osc1_det) * (1 + 0.0008 * this.instr.osc1_detune);
+    var o2t = getnotefreq(n + (this.instr.osc2_oct - 8) * 12 + this.instr.osc2_det) * (1 + 0.0008 * this.instr.osc2_detune);
+
+    // State variable init
+    var q = this.instr.fx_resonance / 255;
+    var low = 0;
+    var band = 0;
+    for (var j = this.attack + this.sustain + this.release - 1; j >= 0; --j)
+    {
+        var k = j + currentpos;
+
+        // LFO
+        var lfor = this.osc_lfo(k * this.lfoFreq) * this.instr.lfo_amt / 512 + 0.5;
+
+        // Envelope
+        var e = 1;
+        if(j < this.attack)
+            e = j / this.attack;
+        else if(j >= this.attack + this.sustain)
+            e -= (j - this.attack - this.sustain) / this.release;
+
+        // Oscillator 1
+        var t = o1t;
+        if(this.instr.lfo_osc1_freq) t += lfor;
+        if(this.instr.osc1_xenv) t *= e * e;
+        c1 += t;
+        var rsample = this.osc1(c1) * this.instr.osc1_vol;
+
+        // Oscillator 2
+        t = o2t;
+        if(this.instr.osc2_xenv) t *= e * e;
+        c2 += t;
+        rsample += this.osc2(c2) * this.instr.osc2_vol;
+
+        // Noise oscillator
+        if(this.instr.noise_fader) rsample += (2*Math.random()-1) * this.instr.noise_fader * e;
+
+        rsample *= e / 255;
+
+        // State variable filter
+        var f = this.instr.fx_freq;
+        if(this.instr.lfo_fx_freq) f *= lfor;
+        f = 1.5 * Math.sin(f * 3.141592 / WAVE_SPS);
+        low += f * band;
+        var high = q * (rsample - band) - low;
+        band += f * high;
+        switch(this.instr.fx_filter)
+        {
+            case 1: // Hipass
+                rsample = high;
+                break;
+            case 2: // Lopass
+                rsample = low;
+                break;
+            case 3: // Bandpass
+                rsample = band;
+                break;
+            case 4: // Notch
+                rsample = low + high;
+                break;
+            default:
+        }
+
+        // Panning & master volume
+        t = osc_sin(k * this.panFreq) * this.instr.fx_pan_amt / 512 + 0.5;
+        rsample *= 39 * this.instr.env_master;
+
+        // Add to 16-bit channel buffer
+        k = k * 4;
+        if (k + 3 < chnBuf.length) {
+            var x = chnBuf[k] + (chnBuf[k+1] << 8) + rsample * (1 - t);
+            chnBuf[k] = x & 255;
+            chnBuf[k+1] = (x >> 8) & 255;
+            x = chnBuf[k+2] + (chnBuf[k+3] << 8) + rsample * t;
+            chnBuf[k+2] = x & 255;
+            chnBuf[k+3] = (x >> 8) & 255;
+        }
+    }
+};
+
+sonantx.SoundGenerator.prototype.getAudioGenerator = function(n, callBack) {
+    var bufferSize = (this.attack + this.sustain + this.release - 1) + (32 * this.rowLen);
+    var self = this;
+    genBuffer(bufferSize, function(buffer) {
+        self.genSound(n, buffer, 0);
+        applyDelay(buffer, bufferSize, self.instr, self.rowLen, function() {
+            callBack(new sonantx.AudioGenerator(buffer));
+        });
+    });
+};
+
+// sonantx.SoundGenerator.prototype.createAudio = function(n, callBack) {
+//     this.getAudioGenerator(n, function(ag) {
+//         callBack(ag.getAudio());
+//     });
+// };
+
+sonantx.SoundGenerator.prototype.createAudioBuffer = function(n, callBack) {
+    this.getAudioGenerator(n, function(ag) {
+        ag.getAudioBuffer(callBack);
+    });
+};
+
+sonantx.MusicGenerator = function(song) {
+    this.song = song;
+    // Wave data configuration
+    this.waveSize = WAVE_SPS * song.songLen; // Total song size (in samples)
+};
+sonantx.MusicGenerator.prototype.generateTrack = function (instr, mixBuf, callBack) {
+    var self = this;
+    genBuffer(this.waveSize, function(chnBuf) {
+        // Preload/precalc some properties/expressions (for improved performance)
+        var waveSamples = self.waveSize,
+            waveBytes = self.waveSize * WAVE_CHAN * 2,
+            rowLen = self.song.rowLen,
+            endPattern = self.song.endPattern,
+            soundGen = new sonantx.SoundGenerator(instr, rowLen);
+
+        var currentpos = 0;
+        var p = 0;
+        var row = 0;
+        var recordSounds = function() {
+            var beginning = new Date();
+            while (true) {
+                if (row === 32) {
+                    row = 0;
+                    p += 1;
+                    continue;
+                }
+                if (p === endPattern - 1) {
+                    setTimeout(delay, 0);
+                    return;
+                }
+                var cp = instr.p[p];
+                if (cp) {
+                    var n = instr.c[cp - 1].n[row];
+                    if (n) {
+                        soundGen.genSound(n, chnBuf, currentpos);
+                    }
+                }
+                currentpos += rowLen;
+                row += 1;
+                if (new Date() - beginning > MAX_TIME) {
+                    setTimeout(recordSounds, 0);
+                    return;
+                }
+            }
+        };
+
+        var delay = function() {
+            applyDelay(chnBuf, waveSamples, instr, rowLen, finalize);
+        };
+
+        var b2 = 0;
+        var finalize = function() {
+            var beginning = new Date();
+            var count = 0;
+            // Add to mix buffer
+            while(b2 < waveBytes)
+            {
+                var x2 = mixBuf[b2] + (mixBuf[b2+1] << 8) + chnBuf[b2] + (chnBuf[b2+1] << 8) - 32768;
+                mixBuf[b2] = x2 & 255;
+                mixBuf[b2+1] = (x2 >> 8) & 255;
+                b2 += 2;
+                count += 1;
+                if (count % 1000 === 0 && (new Date() - beginning) > MAX_TIME) {
+                    setTimeout(finalize, 0);
+                    return;
+                }
+            }
+            setTimeout(callBack, 0);
+        };
+        setTimeout(recordSounds, 0);
+    });
+};
+sonantx.MusicGenerator.prototype.getAudioGenerator = function(callBack) {
+    var self = this;
+    genBuffer(this.waveSize, function(mixBuf) {
+        var t = 0;
+        var recu = function() {
+            if (t < self.song.songData.length) {
+                t += 1;
+                self.generateTrack(self.song.songData[t - 1], mixBuf, recu);
+            } else {
+                callBack(new sonantx.AudioGenerator(mixBuf));
+            }
+        };
+        recu();
+    });
+};
+
+sonantx.MusicGenerator.prototype.createAudioBuffer = function(callBack) {
+    this.getAudioGenerator(function(ag) {
+        ag.getAudioBuffer(callBack);
+    });
+};
+
+//---------END SONANT-X-----
+
+var song1 = {
+    "songLen": 37,
+    "songData": [
+        {
+            "osc1_oct": 7,
+            "osc1_det": 0,
+            "osc1_detune": 0,
+            "osc1_xenv": 0,
+            "osc1_vol": 192,
+            "osc1_waveform": 3,
+            "osc2_oct": 7,
+            "osc2_det": 0,
+            "osc2_detune": 7,
+            "osc2_xenv": 0,
+            "osc2_vol": 201,
+            "osc2_waveform": 3,
+            "noise_fader": 0,
+            "env_attack": 789,
+            "env_sustain": 1234,
+            "env_release": 13636,
+            "env_master": 191,
+            "fx_filter": 2,
+            "fx_freq": 5839,
+            "fx_resonance": 254,
+            "fx_delay_time": 6,
+            "fx_delay_amt": 121,
+            "fx_pan_freq": 6,
+            "fx_pan_amt": 147,
+            "lfo_osc1_freq": 0,
+            "lfo_fx_freq": 1,
+            "lfo_freq": 6,
+            "lfo_amt": 195,
+            "lfo_waveform": 0,
+            "p": [
+                1,
+                2,
+                0,
+                0,
+                1,
+                2,
+                1,
+                2
+            ],
+            "c": [
+                {
+                    "n": [
+                        154,
+                        0,
+                        154,
+                        0,
+                        152,
+                        0,
+                        147,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        154,
+                        0,
+                        154,
+                        0,
+                        152,
+                        0,
+                        157,
+                        0,
+                        0,
+                        0,
+                        156,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "n": [
+                        154,
+                        0,
+                        154,
+                        0,
+                        152,
+                        0,
+                        147,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        154,
+                        0,
+                        154,
+                        0,
+                        152,
+                        0,
+                        157,
+                        0,
+                        0,
+                        0,
+                        159,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        },
+        {
+            "osc1_oct": 7,
+            "osc1_det": 0,
+            "osc1_detune": 0,
+            "osc1_xenv": 0,
+            "osc1_vol": 255,
+            "osc1_waveform": 2,
+            "osc2_oct": 8,
+            "osc2_det": 0,
+            "osc2_detune": 18,
+            "osc2_xenv": 1,
+            "osc2_vol": 191,
+            "osc2_waveform": 2,
+            "noise_fader": 0,
+            "env_attack": 3997,
+            "env_sustain": 56363,
+            "env_release": 100000,
+            "env_master": 255,
+            "fx_filter": 2,
+            "fx_freq": 392,
+            "fx_resonance": 255,
+            "fx_delay_time": 8,
+            "fx_delay_amt": 69,
+            "fx_pan_freq": 5,
+            "fx_pan_amt": 67,
+            "lfo_osc1_freq": 0,
+            "lfo_fx_freq": 1,
+            "lfo_freq": 4,
+            "lfo_amt": 57,
+            "lfo_waveform": 3,
+            "p": [
+                1,
+                2,
+                1,
+                2,
+                1,
+                2,
+                1,
+                2
+            ],
+            "c": [
+                {
+                    "n": [
+                        130,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "n": [
+                        123,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        },
+        {
+            "osc1_oct": 8,
+            "osc1_det": 0,
+            "osc1_detune": 0,
+            "osc1_xenv": 0,
+            "osc1_vol": 0,
+            "osc1_waveform": 0,
+            "osc2_oct": 8,
+            "osc2_det": 0,
+            "osc2_detune": 0,
+            "osc2_xenv": 0,
+            "osc2_vol": 0,
+            "osc2_waveform": 0,
+            "noise_fader": 60,
+            "env_attack": 50,
+            "env_sustain": 419,
+            "env_release": 4607,
+            "env_master": 130,
+            "fx_filter": 1,
+            "fx_freq": 10332,
+            "fx_resonance": 120,
+            "fx_delay_time": 4,
+            "fx_delay_amt": 16,
+            "fx_pan_freq": 5,
+            "fx_pan_amt": 108,
+            "lfo_osc1_freq": 0,
+            "lfo_fx_freq": 0,
+            "lfo_freq": 5,
+            "lfo_amt": 187,
+            "lfo_waveform": 0,
+            "p": [
+                0,
+                0,
+                0,
+                0,
+                1,
+                1
+            ],
+            "c": [
+                {
+                    "n": [
+                        0,
+                        0,
+                        147,
+                        0,
+                        0,
+                        0,
+                        147,
+                        147,
+                        0,
+                        0,
+                        147,
+                        0,
+                        0,
+                        147,
+                        0,
+                        147,
+                        0,
+                        0,
+                        147,
+                        0,
+                        0,
+                        0,
+                        147,
+                        147,
+                        0,
+                        0,
+                        147,
+                        0,
+                        0,
+                        147,
+                        0,
+                        147
+                    ]
+                }
+            ]
+        },
+        {
+            "osc1_oct": 7,
+            "osc1_det": 0,
+            "osc1_detune": 0,
+            "osc1_xenv": 1,
+            "osc1_vol": 255,
+            "osc1_waveform": 0,
+            "osc2_oct": 7,
+            "osc2_det": 0,
+            "osc2_detune": 0,
+            "osc2_xenv": 1,
+            "osc2_vol": 255,
+            "osc2_waveform": 0,
+            "noise_fader": 0,
+            "env_attack": 50,
+            "env_sustain": 150,
+            "env_release": 4800,
+            "env_master": 200,
+            "fx_filter": 2,
+            "fx_freq": 600,
+            "fx_resonance": 254,
+            "fx_delay_time": 0,
+            "fx_delay_amt": 0,
+            "fx_pan_freq": 0,
+            "fx_pan_amt": 0,
+            "lfo_osc1_freq": 0,
+            "lfo_fx_freq": 0,
+            "lfo_freq": 0,
+            "lfo_amt": 0,
+            "lfo_waveform": 0,
+            "p": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            ],
+            "c": [
+                {
+                    "n": [
+                        147,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        147,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        147,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        147,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        },
+        {
+            "osc1_oct": 7,
+            "osc1_det": 0,
+            "osc1_detune": 0,
+            "osc1_xenv": 0,
+            "osc1_vol": 255,
+            "osc1_waveform": 2,
+            "osc2_oct": 7,
+            "osc2_det": 0,
+            "osc2_detune": 9,
+            "osc2_xenv": 0,
+            "osc2_vol": 154,
+            "osc2_waveform": 2,
+            "noise_fader": 0,
+            "env_attack": 2418,
+            "env_sustain": 1075,
+            "env_release": 10614,
+            "env_master": 240,
+            "fx_filter": 3,
+            "fx_freq": 2962,
+            "fx_resonance": 255,
+            "fx_delay_time": 6,
+            "fx_delay_amt": 117,
+            "fx_pan_freq": 3,
+            "fx_pan_amt": 73,
+            "lfo_osc1_freq": 0,
+            "lfo_fx_freq": 1,
+            "lfo_freq": 5,
+            "lfo_amt": 124,
+            "lfo_waveform": 0,
+            "p": [
+                0,
+                0,
+                0,
+                0,
+                1,
+                2,
+                1,
+                2
+            ],
+            "c": [
+                {
+                    "n": [
+                        154,
+                        0,
+                        154,
+                        0,
+                        152,
+                        0,
+                        147,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        154,
+                        0,
+                        154,
+                        0,
+                        152,
+                        0,
+                        157,
+                        0,
+                        0,
+                        0,
+                        156,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "n": [
+                        154,
+                        0,
+                        154,
+                        0,
+                        152,
+                        0,
+                        147,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        154,
+                        0,
+                        147,
+                        0,
+                        152,
+                        0,
+                        157,
+                        0,
+                        0,
+                        0,
+                        159,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        },
+        {
+            "osc1_oct": 7,
+            "osc1_det": 0,
+            "osc1_detune": 0,
+            "osc1_xenv": 0,
+            "osc1_vol": 192,
+            "osc1_waveform": 1,
+            "osc2_oct": 6,
+            "osc2_det": 0,
+            "osc2_detune": 9,
+            "osc2_xenv": 0,
+            "osc2_vol": 192,
+            "osc2_waveform": 1,
+            "noise_fader": 0,
+            "env_attack": 137,
+            "env_sustain": 2000,
+            "env_release": 4611,
+            "env_master": 192,
+            "fx_filter": 1,
+            "fx_freq": 982,
+            "fx_resonance": 89,
+            "fx_delay_time": 6,
+            "fx_delay_amt": 25,
+            "fx_pan_freq": 6,
+            "fx_pan_amt": 77,
+            "lfo_osc1_freq": 0,
+            "lfo_fx_freq": 1,
+            "lfo_freq": 3,
+            "lfo_amt": 69,
+            "lfo_waveform": 0,
+            "p": [
+                1,
+                2,
+                1,
+                3,
+                1,
+                3
+            ],
+            "c": [
+                {
+                    "n": [
+                        130,
+                        0,
+                        130,
+                        0,
+                        142,
+                        0,
+                        130,
+                        130,
+                        0,
+                        142,
+                        130,
+                        0,
+                        142,
+                        0,
+                        130,
+                        0,
+                        130,
+                        0,
+                        130,
+                        0,
+                        142,
+                        0,
+                        130,
+                        130,
+                        0,
+                        142,
+                        130,
+                        0,
+                        142,
+                        0,
+                        130,
+                        0
+                    ]
+                },
+                {
+                    "n": [
+                        123,
+                        0,
+                        123,
+                        0,
+                        135,
+                        0,
+                        123,
+                        123,
+                        0,
+                        135,
+                        123,
+                        0,
+                        135,
+                        0,
+                        123,
+                        0,
+                        123,
+                        0,
+                        123,
+                        0,
+                        135,
+                        0,
+                        123,
+                        123,
+                        0,
+                        135,
+                        123,
+                        0,
+                        135,
+                        0,
+                        123,
+                        0
+                    ]
+                },
+                {
+                    "n": [
+                        135,
+                        0,
+                        135,
+                        0,
+                        147,
+                        0,
+                        135,
+                        135,
+                        0,
+                        147,
+                        135,
+                        0,
+                        147,
+                        0,
+                        135,
+                        0,
+                        135,
+                        0,
+                        135,
+                        0,
+                        147,
+                        0,
+                        135,
+                        135,
+                        0,
+                        147,
+                        135,
+                        0,
+                        147,
+                        0,
+                        135,
+                        0
+                    ]
+                }
+            ]
+        },
+        {
+            "osc1_oct": 7,
+            "osc1_det": 0,
+            "osc1_detune": 0,
+            "osc1_xenv": 0,
+            "osc1_vol": 255,
+            "osc1_waveform": 3,
+            "osc2_oct": 8,
+            "osc2_det": 0,
+            "osc2_detune": 0,
+            "osc2_xenv": 0,
+            "osc2_vol": 255,
+            "osc2_waveform": 0,
+            "noise_fader": 127,
+            "env_attack": 22,
+            "env_sustain": 88,
+            "env_release": 3997,
+            "env_master": 255,
+            "fx_filter": 3,
+            "fx_freq": 4067,
+            "fx_resonance": 234,
+            "fx_delay_time": 4,
+            "fx_delay_amt": 33,
+            "fx_pan_freq": 2,
+            "fx_pan_amt": 84,
+            "lfo_osc1_freq": 0,
+            "lfo_fx_freq": 1,
+            "lfo_freq": 3,
+            "lfo_amt": 28,
+            "lfo_waveform": 0,
+            "p": [
+                0,
+                0,
+                1,
+                2,
+                1,
+                2,
+                1,
+                3
+            ],
+            "c": [
+                {
+                    "n": [
+                        0,
+                        0,
+                        142,
+                        0,
+                        154,
+                        0,
+                        0,
+                        0,
+                        142,
+                        0,
+                        0,
+                        0,
+                        154,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        142,
+                        0,
+                        154,
+                        0,
+                        0,
+                        0,
+                        142,
+                        0,
+                        0,
+                        0,
+                        154,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "n": [
+                        0,
+                        0,
+                        147,
+                        0,
+                        154,
+                        0,
+                        0,
+                        0,
+                        147,
+                        0,
+                        0,
+                        0,
+                        154,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        147,
+                        0,
+                        154,
+                        0,
+                        147,
+                        0,
+                        0,
+                        0,
+                        154,
+                        0,
+                        0,
+                        0,
+                        154,
+                        0
+                    ]
+                },
+                {
+                    "n": [
+                        0,
+                        0,
+                        147,
+                        0,
+                        154,
+                        0,
+                        0,
+                        0,
+                        147,
+                        0,
+                        0,
+                        0,
+                        154,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        147,
+                        0,
+                        154,
+                        0,
+                        0,
+                        0,
+                        147,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        },
+        {
+            "osc1_oct": 8,
+            "osc1_det": 0,
+            "osc1_detune": 0,
+            "osc1_xenv": 0,
+            "osc1_vol": 0,
+            "osc1_waveform": 0,
+            "osc2_oct": 8,
+            "osc2_det": 0,
+            "osc2_detune": 0,
+            "osc2_xenv": 0,
+            "osc2_vol": 0,
+            "osc2_waveform": 0,
+            "noise_fader": 255,
+            "env_attack": 140347,
+            "env_sustain": 9216,
+            "env_release": 133417,
+            "env_master": 208,
+            "fx_filter": 2,
+            "fx_freq": 2500,
+            "fx_resonance": 16,
+            "fx_delay_time": 2,
+            "fx_delay_amt": 157,
+            "fx_pan_freq": 8,
+            "fx_pan_amt": 207,
+            "lfo_osc1_freq": 0,
+            "lfo_fx_freq": 1,
+            "lfo_freq": 2,
+            "lfo_amt": 51,
+            "lfo_waveform": 0,
+            "p": [
+                0,
+                0,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            ],
+            "c": [
+                {
+                    "n": [
+                        147,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        }
+    ],
+    "rowLen": 5513,
+    "endPattern": 9
+}
+
 //--------------Engine.js-------------------
 
-const WIDTH =     453;
+const WIDTH =     384;
 const HEIGHT =    256;
 const PAGES =     8;  //page = 1 screen HEIGHTxWIDTH worth of screenbuffer.
 var
@@ -386,24 +1662,24 @@ ram =             new Uint8ClampedArray(WIDTH * HEIGHT * PAGES);
    } //end outer y loop
   }
 
-  // function checker(x, y, w, h, nRow, nCol, color) {
-  //   //var w = 256;
-  //   //var h = 256;
-  //
-  //   nRow = nRow || 8;    // default number of rows
-  //   nCol = nCol || 8;    // default number of columns
-  //
-  //   w /= nCol;            // width of a block
-  //   h /= nRow;            // height of a block
-  //
-  //   for (var i = 0; i < nRow; ++i) {
-  //     for (var j = 0, col = nCol / 2; j < col; ++j) {
-  //       let bx = x + (2 * j * w + (i % 2 ? 0 : w) );
-  //       let by = i * h;
-  //       fillRect(bx, by, w-1, h-1, color);
-  //     }
-  //   }
-  // }
+  function checker(x, y, w, h, nRow, nCol, color) {
+    //var w = 256;
+    //var h = 256;
+
+    nRow = nRow || 8;    // default number of rows
+    nCol = nCol || 8;    // default number of columns
+
+    w /= nCol;            // width of a block
+    h /= nRow;            // height of a block
+
+    for (var i = 0; i < nRow; ++i) {
+      for (var j = 0, col = nCol / 2; j < col; ++j) {
+        let bx = x + (2 * j * w + (i % 2 ? 0 : w) );
+        let by = i * h;
+        fillRect(bx, by, w-1, h-1, color);
+      }
+    }
+  }
 
 function render() {
 
@@ -425,100 +1701,6 @@ function render() {
 }
 
 //--------END Engine.js-------------------
-
-//TODO: implement one-off sound effect events (shots, coins, etc)
-//TODO: implement music-synchronized visuals
-
-time = 0;
-
-function renderAudio(e) {
-  audioData = e.outputBuffer.getChannelData(0);
-
-  inc = 1 / AC.sampleRate
-
-  samplesPerFrame = AC.sampleRate / 60;
-  //time = t;
-  for(i = 0; i < audioData.length; i++){
-    //time = t;
-    time += inc;
-    signal = 0;
-
-    beat = time * 1.3;
-    bar = beat / 4;
-    half = beat / 2;
-    pattern = bar / 2;
-    note = beat * 4;
-
-    //bassdrum
-    env = Math.pow(1 - beat % 1, 8);
-    signal += ( oscSinus(50) + oscNoise() * .1 ) * env * .3;
-
-    //hat
-    env = Math.pow(1 - beat % .5, 16);
-    signal += oscNoise() * env * .1;
-
-    //hat
-    env = Math.pow(1 - beat % .25, 16);
-    signal += oscNoise() * env * .05;
-
-    //snare
-    env = Math.pow(1 - half % 1, 10);
-    signal += oscNoise() * env * .15;
-
-    //bass
-    env = Math.pow(1- note % 1, 3);
-    f = getnotefreq( bass[note % bass.length|0]  );
-    signal += oscSquare(f) * env * .15;
-
-    //bass2
-    env = Math.pow(1 - note % .5, 3);
-    f = getnotefreq( bass[note % bass.length|0] );
-    signal += oscSquare(f) * env * .15;
-
-//    //lead
-
-      env = Math.pow(1- note % 1, .5);
-      f = getnotefreq( notes[note % notes.length|0] + 0 );
-      signal += ( oscSawtooth(f) + oscSawtooth(f*1.01) + oscSawtooth(f*1.02) ) * env * .05;
-
-
-    //lead2
-
-      env = Math.pow(1- note % 1, 1);
-      f = getnotefreq( notesb[note % notesb.length|0] );
-      signal += ( oscSawtooth(f) + oscSawtooth(f*1.005) + oscSawtooth(f*1.0006) ) * env * .05;
-
-
-
-
-  audioData[i] = signal;
-
-
-  }
-
-}
-kick = "1000100010001000";
-bass =   [-35,0,-23,0,0,-35,0,0,-23,0]
-notes =  [4,0,4,1,0,4,0,4,3,0,4,0,4,8,0,4,0,4,3,0,5,0,5,5,0,5,0,5,5,0,5,5,5,8,0,5,5,0,5,0]
-notesb = [13,1,8,6,11];
-
-
-oscSinus =
-  f => Math.sin(f * time * Math.PI * 2);
-
-oscSawtooth =
-  f => (f * time * 2 + 1) % 2 - 1;
-
-oscSquare =
-  f => 1 - (f * time * 2 & 1) * 2;
-
-oscNoise =
-  f => Math.random() * 2 - 1;
-
-function getnotefreq(n){
-    if(n == 0)return 0;
-    return 0.00390625 * Math.pow(1.059463094, n + 200); //200 magic number gets note 1 in audible range around middle C
-}
 
 //-----main.js---------------
 
@@ -561,10 +1743,11 @@ init = () => {
   //capturer.start();
 
   //start the game loop
-  SP = AC.createScriptProcessor(1024, 0, 1);
-  SP.connect(AC.destination);
-  SP.onaudioprocess = renderAudio;
-  loop();
+  // SP = AC.createScriptProcessor(1024, 0, 1);
+  // SP.connect(AC.destination);
+  // SP.onaudioprocess = renderAudio;
+   //player = new sonantx;
+   loop();
 
 }
 
@@ -604,7 +1787,6 @@ loop = e => {
     states[state].render();
 
 
-    //update
     states[state].step(dt);
 
     last = now;
@@ -622,6 +1804,110 @@ loop = e => {
 }
 
 //----- END main.js---------------
+
+var songGen = new sonantx.MusicGenerator(song1);
+
+// songGen.createAudioBuffer(function(buffer) {
+//     var source = audioCtx.createBufferSource();
+//     source.buffer = buffer;
+//     source.connect(audioCtx.destination);
+//     source.start();
+// });
+
+
+// //TODO: implement one-off sound effect events (shots, coins, etc)
+// //TODO: implement music-synchronized visuals
+//
+// time = 0;
+//
+// function renderAudio(e) {
+//   audioData = e.outputBuffer.getChannelData(0);
+//
+//   inc = 1 / AC.sampleRate
+//
+//   samplesPerFrame = AC.sampleRate / 60;
+//   //time = t;
+//   for(i = 0; i < audioData.length; i++){
+//     //time = t;
+//     time += inc;
+//     signal = 0;
+//
+//     beat = time * 1.3;
+//     bar = beat / 4;
+//     half = beat / 2;
+//     pattern = bar / 2;
+//     note = beat * 4;
+//
+//     //bassdrum
+//     env = Math.pow(1 - beat % 1, 8);
+//     signal += ( oscSinus(50) + oscNoise() * .1 ) * env * .3;
+//
+//     //hat
+//     env = Math.pow(1 - beat % .5, 16);
+//     signal += oscNoise() * env * .1;
+//
+//     //hat
+//     env = Math.pow(1 - beat % .25, 16);
+//     signal += oscNoise() * env * .05;
+//
+//     //snare
+//     env = Math.pow(1 - half % 1, 10);
+//     signal += oscNoise() * env * .15;
+//
+//     //bass
+//     env = Math.pow(1- note % 1, 3);
+//     f = getnotefreq( bass[note % bass.length|0]  );
+//     signal += oscSquare(f) * env * .15;
+//
+//     //bass2
+//     env = Math.pow(1 - note % .5, 3);
+//     f = getnotefreq( bass[note % bass.length|0] );
+//     signal += oscSquare(f) * env * .15;
+//
+// //    //lead
+//
+//       env = Math.pow(1- note % 1, .5);
+//       f = getnotefreq( notes[note % notes.length|0] + 0 );
+//       signal += ( oscSawtooth(f) + oscSawtooth(f*1.01) + oscSawtooth(f*1.02) ) * env * .05;
+//
+//
+//     //lead2
+//
+//       env = Math.pow(1- note % 1, 1);
+//       f = getnotefreq( notesb[note % notesb.length|0] );
+//       signal += ( oscSawtooth(f) + oscSawtooth(f*1.005) + oscSawtooth(f*1.0006) ) * env * .05;
+//
+//
+//
+//
+//   audioData[i] = signal;
+//
+//
+//   }
+//
+// }
+// kick = "1000100010001000";
+// bass =   [-35,0,-23,0,0,-35,0,0,-23,0]
+// notes =  [4,0,4,1,0,4,0,4,3,0,4,0,4,8,0,4,0,4,3,0,5,0,5,5,0,5,0,5,5,0,5,5,5,8,0,5,5,0,5,0]
+// notesb = [13,1,8,6,11];
+//
+//
+// oscSinus =
+//   f => Math.sin(f * time * Math.PI * 2);
+//
+// oscSawtooth =
+//   f => (f * time * 2 + 1) % 2 - 1;
+//
+// oscSquare =
+//   f => 1 - (f * time * 2 & 1) * 2;
+//
+// oscNoise =
+//   f => Math.random() * 2 - 1;
+//
+// function getnotefreq(n){
+//     if(n == 0)return 0;
+//     return 0.00390625 * Math.pow(1.059463094, n + 200); //200 magic number gets note 1 in audible range around middle C
+// }
 
 //--------gameoverstate.js-----------
 

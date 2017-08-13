@@ -379,11 +379,7 @@ sonantx.MusicGenerator.prototype.getAudioGenerator = function(callBack) {
         recu();
     });
 };
-// sonantx.MusicGenerator.prototype.createAudio = function(callBack) {
-//     this.getAudioGenerator(function(ag) {
-//         callBack(ag.getAudio());
-//     });
-// };
+
 sonantx.MusicGenerator.prototype.createAudioBuffer = function(callBack) {
     this.getAudioGenerator(function(ag) {
         ag.getAudioBuffer(callBack);
